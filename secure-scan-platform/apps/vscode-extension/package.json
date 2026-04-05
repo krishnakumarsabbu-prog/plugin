@@ -1,0 +1,197 @@
+{
+  "name": "secure-scan-vscode",
+  "displayName": "Secure Scan — Checkmarx",
+  "description": "Enterprise security scanning powered by Checkmarx, with GitHub Copilot integration",
+  "version": "1.0.0",
+  "publisher": "secure-scan",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./dist/extension.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit",
+    "package": "vsce package"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "secureScan.scanChangedFiles",
+        "title": "Scan Changed Files",
+        "category": "Secure Scan"
+      },
+      {
+        "command": "secureScan.scanStagedFiles",
+        "title": "Scan Staged Files",
+        "category": "Secure Scan"
+      },
+      {
+        "command": "secureScan.scanCurrentFile",
+        "title": "Scan Current File",
+        "category": "Secure Scan"
+      },
+      {
+        "command": "secureScan.scanFolder",
+        "title": "Scan Folder",
+        "category": "Secure Scan"
+      },
+      {
+        "command": "secureScan.scanWorkspace",
+        "title": "Scan Workspace / Project",
+        "category": "Secure Scan"
+      },
+      {
+        "command": "secureScan.openFindings",
+        "title": "Open Findings",
+        "category": "Secure Scan"
+      },
+      {
+        "command": "secureScan.fixFindings",
+        "title": "Fix All Findings",
+        "category": "Secure Scan"
+      },
+      {
+        "command": "secureScan.fixHighSeverity",
+        "title": "Fix High Severity Findings",
+        "category": "Secure Scan"
+      },
+      {
+        "command": "secureScan.scanThisFile",
+        "title": "Scan This File with Checkmarx",
+        "category": "Secure Scan"
+      },
+      {
+        "command": "secureScan.scanThisFolder",
+        "title": "Scan This Folder with Checkmarx",
+        "category": "Secure Scan"
+      },
+      {
+        "command": "secureScan.scanThisProject",
+        "title": "Scan This Project with Checkmarx",
+        "category": "Secure Scan"
+      },
+      {
+        "command": "secureScan.fixFindingsInFile",
+        "title": "Fix Findings in This File",
+        "category": "Secure Scan"
+      },
+      {
+        "command": "secureScan.refreshFindings",
+        "title": "Refresh Findings",
+        "category": "Secure Scan",
+        "icon": "$(refresh)"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "secureScan.scanThisFile",
+          "when": "resourceScheme == file && !explorerResourceIsFolder",
+          "group": "secureScan@1"
+        },
+        {
+          "command": "secureScan.fixFindingsInFile",
+          "when": "resourceScheme == file && !explorerResourceIsFolder",
+          "group": "secureScan@2"
+        },
+        {
+          "command": "secureScan.scanThisFolder",
+          "when": "explorerResourceIsFolder",
+          "group": "secureScan@1"
+        },
+        {
+          "command": "secureScan.scanThisProject",
+          "when": "explorerResourceIsFolder",
+          "group": "secureScan@2"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "secureScan.scanCurrentFile",
+          "group": "secureScan@1"
+        },
+        {
+          "command": "secureScan.fixFindingsInFile",
+          "group": "secureScan@2"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "secureScan.scanCurrentFile",
+          "group": "secureScan"
+        }
+      ],
+      "scm/title": [
+        {
+          "command": "secureScan.scanStagedFiles",
+          "group": "secureScan@1"
+        },
+        {
+          "command": "secureScan.scanChangedFiles",
+          "group": "secureScan@2"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "secureScan.refreshFindings",
+          "when": "view == secureScan.findingsExplorer",
+          "group": "navigation"
+        }
+      ]
+    },
+    "views": {
+      "explorer": [
+        {
+          "id": "secureScan.findingsExplorer",
+          "name": "Checkmarx Findings",
+          "icon": "$(shield)",
+          "contextualTitle": "Checkmarx Security Findings"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "secureScan",
+          "title": "Checkmarx Security",
+          "icon": "$(shield)"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Secure Scan",
+      "properties": {
+        "secureScan.checkmarxBaseUrl": {
+          "type": "string",
+          "description": "Checkmarx server base URL"
+        },
+        "secureScan.checkmarxApiKey": {
+          "type": "string",
+          "description": "Checkmarx API key"
+        },
+        "secureScan.checkmarxProjectId": {
+          "type": "string",
+          "description": "Checkmarx project ID"
+        },
+        "secureScan.logLevel": {
+          "type": "string",
+          "enum": ["debug", "info", "warn", "error"],
+          "default": "info",
+          "description": "Log level"
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "@secure-scan/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.3"
+  }
+}

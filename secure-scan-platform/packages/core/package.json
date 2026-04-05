@@ -1,0 +1,25 @@
+{
+  "name": "@secure-scan/core",
+  "version": "1.0.0",
+  "description": "Shared core business logic for Secure Scan Platform",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "archiver": "^6.0.1",
+    "diff": "^5.2.0",
+    "dotenv": "^16.4.1",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/archiver": "^6.0.2",
+    "@types/diff": "^5.2.1",
+    "@types/node": "^20.11.5",
+    "typescript": "^5.3.3"
+  }
+}

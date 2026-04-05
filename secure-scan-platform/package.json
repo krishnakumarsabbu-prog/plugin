@@ -1,0 +1,19 @@
+{
+  "name": "secure-scan-platform",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Enterprise MCP + VS Code Extension + Checkmarx Secure Scan Platform",
+  "scripts": {
+    "build": "pnpm -r build",
+    "build:core": "pnpm --filter @secure-scan/core build",
+    "build:mcp": "pnpm --filter @secure-scan/mcp-server build",
+    "build:ext": "pnpm --filter @secure-scan/vscode-extension build",
+    "dev:mcp": "pnpm --filter @secure-scan/mcp-server dev",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "clean": "pnpm -r clean"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}
