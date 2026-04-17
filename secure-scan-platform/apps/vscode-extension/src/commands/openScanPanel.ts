@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
 import { getScanPanelHtml } from '../ui/scanPanelHtml';
 import { getResultsPanelHtml } from '../ui/resultsPanelHtml';
 
@@ -68,6 +69,9 @@ function openScanPanel(context: vscode.ExtensionContext): void {
 function openResultsPanel(context: vscode.ExtensionContext, scanId: number | null = null): void {
   if (resultsPanel) {
     resultsPanel.reveal(vscode.ViewColumn.One);
+    if (scanId) {
+      resultsPanel.webview.postMessage({ type: 'SET_SCAN_ID', scanId });
+    }
     return;
   }
 
@@ -81,14 +85,37 @@ function openResultsPanel(context: vscode.ExtensionContext, scanId: number | nul
     }
   );
 
-  resultsPanel.webview.html = getResultsPanelHtml();
+  resultsPanel.webview.html = getResultsPanelHtml(scanId);
 
   resultsPanel.webview.onDidReceiveMessage(
-    (msg: { type: string; issue?: unknown; data?: unknown }) => {
+    async (msg: {
+      type: string;
+      issue?: unknown;
+      data?: unknown;
+      file?: string;
+      line?: number;
+      payload?: {
+        fileName: string;
+        code: string;
+        vulnerability: string;
+        description: string;
+        cwe?: string;
+        severity?: string;
+        nodes?: unknown[];
+      };
+    }) => {
       switch (msg.type) {
         case 'NEW_SCAN':
           resultsPanel?.dispose();
           openScanPanel(context);
+          break;
+
+        case 'OPEN_FILE':
+          await handleOpenFile(msg.file, msg.line);
+          break;
+
+        case 'COPILOT_FIX':
+          await handleCopilotFix(msg.payload);
           break;
 
         case 'ANALYZE_ALL':
@@ -96,7 +123,7 @@ function openResultsPanel(context: vscode.ExtensionContext, scanId: number | nul
           break;
 
         case 'FIX_ALL':
-          vscode.window.showInformationMessage('CheckmarkX: Use GitHub Copilot Chat to fix all findings.');
+          vscode.window.showInformationMessage('CheckmarkX: Use GitHub Copilot Chat and type "fix all security issues" to fix findings.');
           break;
 
         case 'ANALYZE_SELECTED':
@@ -129,4 +156,93 @@ function openResultsPanel(context: vscode.ExtensionContext, scanId: number | nul
     undefined,
     context.subscriptions
   );
+}
+
+async function handleOpenFile(file?: string, line?: number): Promise<void> {
+  if (!file) {
+    vscode.window.showWarningMessage('CheckmarkX: No file path available for this finding.');
+    return;
+  }
+
+  try {
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    let uri: vscode.Uri | undefined;
+
+    if (workspaceFolders && workspaceFolders.length > 0) {
+      for (const folder of workspaceFolders) {
+        const candidate = vscode.Uri.joinPath(folder.uri, file);
+        try {
+          await vscode.workspace.fs.stat(candidate);
+          uri = candidate;
+          break;
+        } catch {
+          // not found in this workspace root
+        }
+      }
+    }
+
+    if (!uri) {
+      if (path.isAbsolute(file)) {
+        uri = vscode.Uri.file(file);
+      } else if (workspaceFolders && workspaceFolders.length > 0) {
+        uri = vscode.Uri.joinPath(workspaceFolders[0].uri, file);
+      }
+    }
+
+    if (!uri) {
+      vscode.window.showWarningMessage(`CheckmarkX: Cannot resolve file: ${file}`);
+      return;
+    }
+
+    const doc = await vscode.workspace.openTextDocument(uri);
+    const editor = await vscode.window.showTextDocument(doc, vscode.ViewColumn.Beside);
+
+    if (line && line > 0) {
+      const targetLine = Math.max(0, line - 1);
+      const range = new vscode.Range(targetLine, 0, targetLine, 0);
+      editor.revealRange(range, vscode.TextEditorRevealType.InCenter);
+      editor.selection = new vscode.Selection(targetLine, 0, targetLine, 0);
+    }
+  } catch (err) {
+    vscode.window.showErrorMessage(`CheckmarkX: Failed to open file "${file}". ${err}`);
+  }
+}
+
+async function handleCopilotFix(payload?: {
+  fileName: string;
+  code: string;
+  vulnerability: string;
+  description: string;
+  cwe?: string;
+  severity?: string;
+  nodes?: unknown[];
+}): Promise<void> {
+  if (!payload) {
+    vscode.window.showWarningMessage('CheckmarkX: No fix payload available.');
+    return;
+  }
+
+  const { fileName, code, vulnerability, description, cwe, severity } = payload;
+
+  await handleOpenFile(fileName, undefined);
+
+  const cweRef = cwe ? ` (CWE-${cwe})` : '';
+  const sevInfo = severity ? ` [Severity: ${severity}]` : '';
+  const prompt = [
+    `Fix this ${vulnerability}${cweRef} vulnerability${sevInfo}.`,
+    description ? `\n\nContext: ${description}` : '',
+    code ? `\n\nVulnerable code:\n\`\`\`\n${code}\n\`\`\`` : '',
+    '\n\nPlease provide a secure fix with explanation.'
+  ].join('');
+
+  await vscode.env.clipboard.writeText(prompt);
+
+  const action = await vscode.window.showInformationMessage(
+    `CheckmarkX: Fix prompt for "${vulnerability}${cweRef}" copied to clipboard. Open Copilot Chat and paste it.`,
+    'Open Copilot Chat'
+  );
+
+  if (action === 'Open Copilot Chat') {
+    vscode.commands.executeCommand('workbench.panel.chat.view.copilot.focus');
+  }
 }
