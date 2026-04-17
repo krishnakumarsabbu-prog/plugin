@@ -5,183 +5,232 @@ export function getResultsPanelHtml(scanId?: number | null): string {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CheckmarkX — Vulnerability Dashboard</title>
+  <title>CheckmarkX Results</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg-0: #080c12;
+      --bg-0: #07090f;
       --bg-1: #0d1117;
-      --bg-2: #161b22;
-      --bg-3: #1c2333;
-      --bg-hover: #1f2a3c;
-      --border: #21262d;
-      --border-2: #30363d;
-      --text-1: #e6edf3;
-      --text-2: #8b949e;
-      --text-3: #484f58;
-      --red: #f85149;
-      --red-dim: rgba(248,81,73,0.14);
-      --red-border: rgba(248,81,73,0.35);
-      --orange: #f0883e;
-      --orange-dim: rgba(240,136,62,0.14);
-      --orange-border: rgba(240,136,62,0.35);
-      --yellow: #e3b341;
-      --yellow-dim: rgba(227,179,65,0.14);
-      --green: #3fb950;
-      --green-dim: rgba(63,185,80,0.14);
-      --green-border: rgba(63,185,80,0.35);
-      --blue: #388bfd;
-      --blue-dim: rgba(56,139,253,0.14);
-      --blue-border: rgba(56,139,253,0.35);
-      --cyan: #39d0d8;
-      --cyan-dim: rgba(57,208,216,0.1);
-      --purple: #bc8cff;
-      --accent: #388bfd;
-      --radius: 8px;
-      --radius-sm: 5px;
+      --bg-2: #111620;
+      --bg-3: #161c2a;
+      --bg-4: #1a2235;
+      --bg-hover: #1e2840;
+      --bg-selected: #1b2d4a;
+      --border: #1e2740;
+      --border-2: #253050;
+      --text-1: #dce6f5;
+      --text-2: #8899bb;
+      --text-3: #3d5070;
+      --red: #f04040;
+      --red-dim: rgba(240,64,64,0.15);
+      --red-border: rgba(240,64,64,0.4);
+      --orange: #e07820;
+      --orange-dim: rgba(224,120,32,0.15);
+      --orange-border: rgba(224,120,32,0.4);
+      --yellow: #c8a020;
+      --yellow-dim: rgba(200,160,32,0.15);
+      --green: #28a848;
+      --green-dim: rgba(40,168,72,0.15);
+      --green-border: rgba(40,168,72,0.4);
+      --blue: #3a7bd5;
+      --blue-bright: #4d90f0;
+      --blue-dim: rgba(58,123,213,0.15);
+      --blue-border: rgba(58,123,213,0.4);
+      --teal: #20b8c8;
+      --purple: #9070e8;
+      --purple-dim: rgba(144,112,232,0.2);
+      --purple-border: rgba(144,112,232,0.45);
+      --accent: #4d90f0;
+      --radius: 6px;
+      --radius-sm: 4px;
     }
 
     html, body {
-      background: var(--bg-1);
+      background: var(--bg-0);
       color: var(--text-1);
-      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
-      font-size: 13px;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 12px;
       height: 100vh;
       overflow: hidden;
     }
 
-    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 2px; }
     ::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
 
-    /* ──────────────────────────────────────────────
-       LAYOUT
-    ────────────────────────────────────────────── */
     .shell {
       display: flex;
       flex-direction: column;
       height: 100vh;
       overflow: hidden;
+      background: var(--bg-0);
     }
 
-    /* ──────────────────────────────────────────────
-       TOP BAR
-    ────────────────────────────────────────────── */
-    .topbar {
+    /* ── TAB BAR ── */
+    .tab-bar {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 9px 16px;
+      background: var(--bg-1);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      min-height: 36px;
+    }
+
+    .tab-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0 14px;
+      height: 36px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-2);
+      border-right: 1px solid var(--border);
+      cursor: pointer;
+      position: relative;
+      white-space: nowrap;
+    }
+
+    .tab-item.active {
+      color: var(--text-1);
       background: var(--bg-2);
+    }
+
+    .tab-item.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--blue), var(--teal));
+    }
+
+    .tab-checkmark {
+      color: var(--blue-bright);
+      font-size: 13px;
+    }
+
+    .tab-close {
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 3px;
+      color: var(--text-3);
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+
+    .tab-close:hover { background: var(--bg-hover); color: var(--text-1); }
+
+    .tab-spacer { flex: 1; }
+
+    .tab-search {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 12px;
+      margin: 0 8px;
+    }
+
+    .tab-search-inner {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-3);
+      border: 1px solid var(--border-2);
+      border-radius: var(--radius-sm);
+      padding: 4px 10px;
+      min-width: 180px;
+    }
+
+    .tab-search-inner input {
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text-2);
+      font-size: 11px;
+      font-family: inherit;
+      width: 100%;
+    }
+
+    .tab-search-inner input::placeholder { color: var(--text-3); }
+
+    .tab-icon-btn {
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-sm);
+      color: var(--text-2);
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.12s;
+    }
+
+    .tab-icon-btn:hover { background: var(--bg-hover); color: var(--text-1); }
+
+    .win-btns {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 0 10px;
+    }
+
+    .win-btn {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      cursor: pointer;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .win-btn.minimize { background: #555; }
+    .win-btn.restore { background: #555; }
+    .win-btn.close { background: #d04040; }
+    .win-btn:hover { filter: brightness(1.3); }
+
+    /* ── ANALYSIS COMPLETE BANNER ── */
+    .analysis-banner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: linear-gradient(90deg, rgba(8,18,30,0.95) 0%, rgba(10,22,36,0.95) 100%);
       border-bottom: 1px solid var(--border);
       flex-shrink: 0;
     }
 
-    .topbar-logo {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .logo-icon {
-      width: 26px;
-      height: 26px;
-      background: linear-gradient(135deg, #388bfd 0%, #1f6feb 100%);
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      flex-shrink: 0;
-    }
-
-    .logo-text {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-1);
-      letter-spacing: -0.3px;
-    }
-
-    .logo-text span { color: var(--blue); }
-
-    .scan-id-pill {
-      font-size: 11px;
-      background: var(--blue-dim);
-      color: var(--blue);
-      border: 1px solid var(--blue-border);
-      border-radius: 20px;
-      padding: 2px 10px;
-      font-weight: 600;
-      letter-spacing: 0.2px;
-    }
-
-    .scan-id-pill.loading {
-      animation: pulse-border 1.5s ease-in-out infinite;
-    }
-
-    .status-badge {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 11px;
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-weight: 600;
-    }
-
-    .status-badge.done {
-      background: var(--green-dim);
+    .banner-check {
       color: var(--green);
-      border: 1px solid var(--green-border);
-    }
-
-    .status-badge.loading {
-      background: var(--blue-dim);
-      color: var(--blue);
-      border: 1px solid var(--blue-border);
-    }
-
-    .status-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: currentColor;
+      font-size: 16px;
       flex-shrink: 0;
     }
 
-    .status-dot.pulse { animation: pulse-dot 1.2s ease-in-out infinite; }
-
-    .topbar-spacer { flex: 1; }
-
-    .topbar-actions { display: flex; gap: 6px; align-items: center; }
-
-    .topbar-btn {
-      background: var(--bg-3);
-      border: 1px solid var(--border-2);
-      border-radius: var(--radius-sm);
-      color: var(--text-2);
-      padding: 5px 11px;
-      cursor: pointer;
-      font-size: 12px;
-      font-family: inherit;
-      transition: all 0.15s;
-      display: flex;
-      align-items: center;
-      gap: 5px;
+    .banner-text {
+      font-size: 13px;
+      color: var(--text-1);
     }
 
-    .topbar-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-dim); }
+    .banner-text strong { color: #fff; font-weight: 700; }
 
-    /* ──────────────────────────────────────────────
-       SUMMARY ROW
-    ────────────────────────────────────────────── */
+    /* ── SUMMARY CARDS ── */
     .summary-row {
       display: flex;
       gap: 8px;
-      padding: 10px 16px;
-      background: var(--bg-2);
+      padding: 10px 14px;
+      background: var(--bg-1);
       border-bottom: 1px solid var(--border);
       flex-shrink: 0;
     }
@@ -191,70 +240,68 @@ export function getResultsPanelHtml(scanId?: number | null): string {
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 10px 14px;
+      padding: 9px 12px;
       border-radius: var(--radius);
       border: 1px solid transparent;
       cursor: pointer;
-      transition: all 0.2s;
-      position: relative;
-      overflow: hidden;
+      transition: all 0.18s;
+      min-width: 0;
     }
 
-    .scard::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
+    .scard:hover { filter: brightness(1.15); transform: translateY(-1px); }
+    .scard.active { filter: brightness(1.25); transform: translateY(-1px); }
 
-    .scard:hover::after { opacity: 1; }
-    .scard:hover { filter: brightness(1.12); transform: translateY(-1px); }
-    .scard.active { filter: brightness(1.2); transform: translateY(-1px); }
+    .scard.high   { background: var(--red-dim);    border-color: var(--red-border); }
+    .scard.medium { background: var(--orange-dim); border-color: var(--orange-border); }
+    .scard.low    { background: var(--green-dim);  border-color: var(--green-border); }
+    .scard.total  { background: var(--purple-dim); border-color: var(--purple-border); }
 
-    .scard.total { background: var(--blue-dim); border-color: var(--blue-border); }
-    .scard.high  { background: var(--red-dim);  border-color: var(--red-border); }
-    .scard.medium{ background: var(--orange-dim);border-color: var(--orange-border); }
-    .scard.low   { background: var(--green-dim); border-color: var(--green-border); }
-    .scard.info  { background: var(--yellow-dim);border-color: rgba(227,179,65,0.35); }
-
-    .scard-icon {
-      font-size: 20px;
+    .scard-icon-wrap {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       flex-shrink: 0;
-      line-height: 1;
+      font-size: 15px;
     }
+
+    .scard.high   .scard-icon-wrap { background: var(--red-dim);    border: 1px solid var(--red-border); color: var(--red); }
+    .scard.medium .scard-icon-wrap { background: var(--orange-dim); border: 1px solid var(--orange-border); color: var(--orange); }
+    .scard.low    .scard-icon-wrap { background: var(--green-dim);  border: 1px solid var(--green-border); color: var(--green); }
+    .scard.total  .scard-icon-wrap { background: var(--purple-dim); border: 1px solid var(--purple-border); color: var(--purple); }
+
+    .scard-body { min-width: 0; }
 
     .scard-count {
-      font-size: 26px;
+      font-size: 22px;
       font-weight: 800;
       line-height: 1;
-      letter-spacing: -1px;
+      letter-spacing: -0.5px;
     }
 
-    .scard.total .scard-count { color: var(--blue); }
-    .scard.high  .scard-count { color: var(--red); }
-    .scard.medium .scard-count{ color: var(--orange); }
-    .scard.low   .scard-count { color: var(--green); }
-    .scard.info  .scard-count { color: var(--yellow); }
+    .scard.high   .scard-count { color: var(--red); }
+    .scard.medium .scard-count { color: var(--orange); }
+    .scard.low    .scard-count { color: var(--green); }
+    .scard.total  .scard-count { color: var(--purple); }
 
     .scard-label {
       font-size: 10px;
       color: var(--text-2);
-      margin-top: 2px;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.4px;
+      margin-top: 1px;
     }
 
-    /* ──────────────────────────────────────────────
-       ACTION BAR
-    ────────────────────────────────────────────── */
+    /* ── ACTION BAR ── */
     .action-bar {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 8px 16px;
-      background: var(--bg-2);
+      gap: 6px;
+      padding: 7px 14px;
+      background: var(--bg-1);
       border-bottom: 1px solid var(--border);
       flex-shrink: 0;
     }
@@ -262,8 +309,8 @@ export function getResultsPanelHtml(scanId?: number | null): string {
     .abtn {
       display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 6px 14px;
+      gap: 5px;
+      padding: 5px 12px;
       border-radius: var(--radius-sm);
       font-size: 12px;
       font-weight: 600;
@@ -274,70 +321,104 @@ export function getResultsPanelHtml(scanId?: number | null): string {
       white-space: nowrap;
     }
 
-    .abtn-primary { background: var(--blue); color: #fff; }
-    .abtn-primary:hover { background: #1f6feb; }
-    .abtn-success { background: var(--green); color: #0a0f14; }
-    .abtn-success:hover { background: #2ea043; }
-    .abtn-ghost { background: var(--bg-3); color: var(--text-2); border: 1px solid var(--border-2); }
-    .abtn-ghost:hover { border-color: var(--blue); color: var(--blue); }
-
-    .search-wrap {
-      flex: 1;
-      position: relative;
+    .abtn-primary {
+      background: linear-gradient(90deg, #1a5ec8, #2070e0);
+      color: #fff;
+      box-shadow: 0 1px 4px rgba(30,90,200,0.3);
     }
+    .abtn-primary:hover { background: linear-gradient(90deg, #1f6adb, #2880f5); }
 
-    .search-wrap input {
-      width: 100%;
-      background: var(--bg-3);
-      border: 1px solid var(--border-2);
-      border-radius: var(--radius-sm);
-      padding: 6px 10px 6px 30px;
-      color: var(--text-1);
-      font-size: 12px;
-      font-family: inherit;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-
-    .search-wrap input:focus { border-color: var(--blue); }
-    .search-wrap input::placeholder { color: var(--text-3); }
-
-    .search-icon {
-      position: absolute;
-      left: 9px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-3);
-      font-size: 12px;
-      pointer-events: none;
-    }
-
-    .pill-select {
-      background: var(--bg-3);
-      border: 1px solid var(--border-2);
-      border-radius: var(--radius-sm);
-      padding: 6px 10px;
-      color: var(--text-2);
-      font-size: 12px;
+    .abtn-arrow {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.5);
+      padding: 5px 8px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin-left: -1px;
       cursor: pointer;
+    }
+
+    .abtn-success {
+      background: linear-gradient(90deg, #1a7a30, #22943c);
+      color: #fff;
+      box-shadow: 0 1px 4px rgba(20,120,50,0.3);
+    }
+    .abtn-success:hover { background: linear-gradient(90deg, #1f8f38, #28a848); }
+
+    .abtn-group {
+      display: flex;
+      align-items: stretch;
+    }
+
+    .abtn-group .abtn { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+
+    .action-sep {
+      width: 1px;
+      background: var(--border-2);
+      margin: 0 2px;
+      align-self: stretch;
+    }
+
+    .filter-search {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--bg-3);
+      border: 1px solid var(--border-2);
+      border-radius: var(--radius-sm);
+      padding: 5px 8px;
+    }
+
+    .filter-search input {
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text-1);
+      font-size: 11px;
       font-family: inherit;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .filter-search input::placeholder { color: var(--text-3); }
+    .filter-search .si { color: var(--text-3); font-size: 11px; flex-shrink: 0; }
+
+    .pill-select-wrap {
+      display: flex;
+      align-items: center;
+      background: var(--bg-3);
+      border: 1px solid var(--border-2);
+      border-radius: var(--radius-sm);
+      padding: 0 6px;
+      gap: 3px;
+      cursor: pointer;
+      font-size: 11px;
+      color: var(--text-2);
+      height: 28px;
+    }
+
+    .pill-select-wrap select {
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text-2);
+      font-size: 11px;
+      font-family: inherit;
+      cursor: pointer;
       appearance: none;
     }
 
-    /* ──────────────────────────────────────────────
-       BODY SPLIT
-    ────────────────────────────────────────────── */
+    /* ── BODY ── */
     .body {
       display: flex;
       flex: 1;
       overflow: hidden;
     }
 
-    /* ──────────────────────────────────────────────
-       LEFT: VULN LIST
-    ────────────────────────────────────────────── */
+    /* ── LEFT FILE TREE PANEL ── */
     .left-panel {
-      width: 340px;
+      width: 200px;
       flex-shrink: 0;
       display: flex;
       flex-direction: column;
@@ -350,7 +431,7 @@ export function getResultsPanelHtml(scanId?: number | null): string {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 14px;
+      padding: 6px 10px;
       border-bottom: 1px solid var(--border);
       background: var(--bg-2);
       flex-shrink: 0;
@@ -360,475 +441,586 @@ export function getResultsPanelHtml(scanId?: number | null): string {
       font-size: 11px;
       font-weight: 700;
       color: var(--text-2);
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-    }
-
-    .left-count {
-      font-size: 10px;
-      background: var(--bg-3);
-      border: 1px solid var(--border-2);
-      border-radius: 10px;
-      padding: 1px 8px;
-      color: var(--text-2);
-    }
-
-    .vuln-list {
-      flex: 1;
-      overflow-y: auto;
-      padding: 6px 8px;
       display: flex;
-      flex-direction: column;
+      align-items: center;
       gap: 4px;
     }
 
-    .vuln-card {
-      background: var(--bg-2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 10px 12px;
-      cursor: pointer;
-      transition: all 0.15s;
-      border-left: 3px solid transparent;
-      animation: slide-in 0.2s ease forwards;
-    }
+    .left-header-chevron { color: var(--text-3); font-size: 10px; }
 
-    .vuln-card:hover {
-      background: var(--bg-hover);
-      border-color: var(--border-2);
-    }
-
-    .vuln-card.selected {
-      background: var(--bg-hover);
-      border-color: var(--blue-border);
-      border-left-color: var(--blue);
-    }
-
-    .vuln-card.sev-high   { border-left-color: var(--red); }
-    .vuln-card.sev-high.selected { border-left-color: var(--red); border-color: var(--red-border); }
-    .vuln-card.sev-medium { border-left-color: var(--orange); }
-    .vuln-card.sev-medium.selected { border-left-color: var(--orange); border-color: var(--orange-border); }
-    .vuln-card.sev-low    { border-left-color: var(--green); }
-    .vuln-card.sev-low.selected { border-left-color: var(--green); border-color: var(--green-border); }
-    .vuln-card.sev-info   { border-left-color: var(--yellow); }
-
-    .vc-top {
+    .left-header-icons {
       display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      margin-bottom: 6px;
+      gap: 4px;
     }
 
-    .sev-dot-lg {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      margin-top: 3px;
+    .lh-icon {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 3px;
+      cursor: pointer;
+      color: var(--text-3);
+      font-size: 11px;
+      transition: all 0.12s;
     }
 
-    .sev-dot-lg.high   { background: var(--red); box-shadow: 0 0 6px rgba(248,81,73,0.5); }
-    .sev-dot-lg.medium { background: var(--orange); box-shadow: 0 0 6px rgba(240,136,62,0.5); }
-    .sev-dot-lg.low    { background: var(--green); box-shadow: 0 0 6px rgba(63,185,80,0.4); }
-    .sev-dot-lg.info   { background: var(--yellow); }
+    .lh-icon:hover { background: var(--bg-hover); color: var(--text-1); }
 
-    .vc-name {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-1);
-      line-height: 1.4;
+    .file-tree {
       flex: 1;
+      overflow-y: auto;
+      padding: 4px 0;
     }
 
-    .sev-chip {
-      font-size: 9px;
+    .tree-file {
+      display: flex;
+      align-items: center;
+      padding: 5px 10px;
+      cursor: pointer;
+      transition: background 0.12s;
+      border-left: 2px solid transparent;
+    }
+
+    .tree-file:hover { background: var(--bg-hover); }
+
+    .tree-file.active {
+      background: var(--bg-selected);
+      border-left-color: var(--blue-bright);
+    }
+
+    .tree-file-icon {
+      width: 14px;
+      height: 14px;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
       font-weight: 700;
-      padding: 2px 6px;
-      border-radius: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
       flex-shrink: 0;
+      margin-right: 6px;
     }
 
-    .sev-chip.high   { background: var(--red-dim);    color: var(--red);    border: 1px solid var(--red-border); }
-    .sev-chip.medium { background: var(--orange-dim); color: var(--orange); border: 1px solid var(--orange-border); }
-    .sev-chip.low    { background: var(--green-dim);  color: var(--green);  border: 1px solid var(--green-border); }
-    .sev-chip.info   { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(227,179,65,.35); }
+    .tree-file-icon.js { background: #f0a020; color: #000; }
+    .tree-file-icon.ts { background: #3080e0; color: #fff; }
+    .tree-file-icon.py { background: #3898e0; color: #fff; }
+    .tree-file-icon.sql { background: #30a868; color: #fff; }
+    .tree-file-icon.folder { background: none; color: var(--text-2); font-size: 11px; }
 
-    .vc-meta {
+    .tree-file-name {
+      flex: 1;
+      font-size: 11.5px;
+      color: var(--text-1);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tree-file-count {
+      font-size: 10px;
+      color: var(--text-3);
+      white-space: nowrap;
+      margin-left: 4px;
+    }
+
+    .tree-file-bars {
+      display: flex;
+      gap: 2px;
+      align-items: center;
+      margin: 3px 0 0 20px;
+    }
+
+    .bar-seg {
+      height: 4px;
+      border-radius: 2px;
+    }
+
+    .bar-seg.red    { background: var(--red); }
+    .bar-seg.orange { background: var(--orange); }
+    .bar-seg.green  { background: var(--green); }
+
+    .tree-file-row2 {
+      display: flex;
+      align-items: center;
+      padding: 0 10px 5px 30px;
+      gap: 6px;
+    }
+
+    .tree-hotspot {
+      font-size: 9px;
+      background: var(--orange-dim);
+      color: var(--orange);
+      border: 1px solid var(--orange-border);
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-weight: 600;
+    }
+
+    .tree-nums {
+      font-size: 10px;
+      color: var(--text-3);
+    }
+
+    .tree-folder {
+      padding: 5px 10px;
       display: flex;
       align-items: center;
       gap: 6px;
-      flex-wrap: wrap;
+      cursor: pointer;
     }
 
-    .meta-tag {
-      display: flex;
-      align-items: center;
-      gap: 3px;
+    .tree-folder:hover .tree-folder-name { color: var(--text-1); }
+
+    .tree-folder-icon { color: #b8963e; font-size: 12px; }
+    .tree-folder-chevron { color: var(--text-3); font-size: 9px; }
+
+    .tree-folder-name {
+      font-size: 11.5px;
+      color: var(--text-2);
+      flex: 1;
+    }
+
+    .tree-folder-count {
       font-size: 10px;
       color: var(--text-3);
-      background: var(--bg-3);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 1px 6px;
     }
 
-    .meta-tag.cwe {
-      color: var(--purple);
-      background: rgba(188,140,255,0.1);
-      border-color: rgba(188,140,255,0.25);
+    .tree-folder-child {
+      padding-left: 10px;
     }
 
-    .load-more-wrap {
-      padding: 10px 8px;
-      flex-shrink: 0;
-      border-top: 1px solid var(--border);
+    .tree-folder-child .tree-file {
+      padding-left: 14px;
     }
 
-    .load-more-btn {
-      width: 100%;
-      background: var(--bg-3);
-      border: 1px solid var(--border-2);
-      border-radius: var(--radius-sm);
-      color: var(--text-2);
-      padding: 7px;
-      font-size: 12px;
-      font-family: inherit;
+    .tree-sub-item {
+      display: flex;
+      align-items: center;
+      padding: 4px 10px 4px 24px;
       cursor: pointer;
-      transition: all 0.15s;
+      font-size: 11px;
+      color: var(--text-2);
+      gap: 6px;
+      transition: background 0.12s;
     }
 
-    .load-more-btn:hover { border-color: var(--blue); color: var(--blue); }
-    .load-more-btn:disabled { opacity: 0.4; cursor: default; }
+    .tree-sub-item:hover { background: var(--bg-hover); color: var(--text-1); }
 
-    /* ──────────────────────────────────────────────
-       RIGHT: DETAIL PANEL
-    ────────────────────────────────────────────── */
+    .sub-file-icon {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 7px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .sub-file-icon.sql { background: #30a868; color: #fff; }
+
+    .left-footer {
+      padding: 6px 10px;
+      border-top: 1px solid var(--border);
+      font-size: 10px;
+      color: var(--text-3);
+      flex-shrink: 0;
+    }
+
+    /* ── RIGHT FINDINGS PANEL ── */
     .right-panel {
       flex: 1;
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      background: var(--bg-1);
+      background: var(--bg-0);
     }
 
-    .empty-state {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-3);
-      gap: 10px;
-      font-size: 13px;
-    }
-
-    .empty-icon { font-size: 42px; opacity: 0.4; }
-
-    /* ── Detail scroll area ── */
-    .detail-scroll {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    /* ── Section Cards ── */
-    .section-card {
-      background: var(--bg-2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-    }
-
-    .section-header {
+    /* ── FINDINGS HEADER ── */
+    .findings-header {
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 10px 14px;
+      padding: 6px 12px;
+      background: var(--bg-1);
       border-bottom: 1px solid var(--border);
-      background: rgba(255,255,255,0.015);
-    }
-
-    .section-title {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      color: var(--text-2);
-    }
-
-    .section-body { padding: 14px; }
-
-    /* ── Vuln Header Card ── */
-    .detail-header-card {
-      background: var(--bg-2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px;
-    }
-
-    .dh-top {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    .dh-sev-badge {
-      width: 36px;
-      height: 36px;
-      border-radius: var(--radius-sm);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
       flex-shrink: 0;
-    }
-
-    .dh-sev-badge.high   { background: var(--red-dim);    border: 1px solid var(--red-border); }
-    .dh-sev-badge.medium { background: var(--orange-dim); border: 1px solid var(--orange-border); }
-    .dh-sev-badge.low    { background: var(--green-dim);  border: 1px solid var(--green-border); }
-    .dh-sev-badge.info   { background: var(--yellow-dim); border: 1px solid rgba(227,179,65,.35); }
-
-    .dh-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--text-1);
-      line-height: 1.3;
-      flex: 1;
-    }
-
-    .dh-pills {
-      display: flex;
-      gap: 6px;
       flex-wrap: wrap;
-      align-items: center;
     }
 
-    .pill {
-      font-size: 10px;
-      font-weight: 600;
-      padding: 3px 9px;
-      border-radius: 20px;
-    }
-
-    .pill.sev-high   { background: var(--red-dim);    color: var(--red);    border: 1px solid var(--red-border); }
-    .pill.sev-medium { background: var(--orange-dim); color: var(--orange); border: 1px solid var(--orange-border); }
-    .pill.sev-low    { background: var(--green-dim);  color: var(--green);  border: 1px solid var(--green-border); }
-    .pill.sev-info   { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(227,179,65,.35); }
-    .pill.cwe        { background: rgba(188,140,255,0.12); color: var(--purple); border: 1px solid rgba(188,140,255,.3); }
-    .pill.scan       { background: var(--blue-dim); color: var(--blue); border: 1px solid var(--blue-border); }
-
-    /* ── Data Flow ── */
-    .flow-container {
-      padding: 14px;
-      overflow-x: auto;
-    }
-
-    .flow-track {
-      display: flex;
-      align-items: stretch;
-      gap: 0;
-      min-width: max-content;
-    }
-
-    .flow-node {
-      background: var(--bg-3);
-      border: 1px solid var(--border-2);
-      border-radius: var(--radius-sm);
-      padding: 10px 14px;
-      min-width: 160px;
-      max-width: 220px;
-      position: relative;
-      transition: all 0.15s;
-      cursor: default;
-    }
-
-    .flow-node:hover {
-      border-color: var(--blue-border);
-      background: var(--bg-hover);
-    }
-
-    .flow-node.source { border-color: var(--red-border); background: var(--red-dim); }
-    .flow-node.sink   { border-color: var(--orange-border); background: var(--orange-dim); }
-    .flow-node.middle { border-color: var(--border-2); }
-
-    .fn-label {
-      font-size: 9px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 4px;
-    }
-
-    .fn-label.source-lbl { color: var(--red); }
-    .fn-label.sink-lbl   { color: var(--orange); }
-    .fn-label.node-lbl   { color: var(--text-3); }
-
-    .fn-name {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-1);
-      margin-bottom: 3px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .fn-file {
-      font-size: 10px;
-      color: var(--text-3);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .fn-line {
-      font-size: 9px;
-      color: var(--blue);
-      margin-top: 2px;
-    }
-
-    .flow-arrow {
-      display: flex;
-      align-items: center;
-      padding: 0 8px;
-      color: var(--text-3);
-      font-size: 16px;
-      flex-shrink: 0;
-      align-self: center;
-    }
-
-    .flow-arrow-animated {
-      animation: arrow-pulse 1.5s ease-in-out infinite;
-    }
-
-    /* ── Code Snippet ── */
-    .code-section { padding: 0; }
-
-    .code-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 14px;
-      border-bottom: 1px solid var(--border);
-      background: rgba(0,0,0,0.2);
-    }
-
-    .code-label {
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--text-3);
+    .fh-file-tab {
       display: flex;
       align-items: center;
       gap: 5px;
+      font-size: 11.5px;
+      color: var(--text-1);
+      font-weight: 600;
     }
 
-    .code-filename {
-      font-size: 11px;
-      color: var(--blue);
-      font-family: 'Consolas', monospace;
+    .fh-count-badge {
+      background: var(--bg-3);
+      border: 1px solid var(--border-2);
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-size: 10px;
+      color: var(--text-2);
     }
 
-    .code-pre {
-      background: var(--bg-0);
-      padding: 12px 14px;
-      font-family: 'Consolas', 'Cascadia Code', 'SF Mono', monospace;
-      font-size: 12px;
-      line-height: 1.7;
-      overflow-x: auto;
-      margin: 0;
-      border: none;
-    }
+    .fh-sep { color: var(--text-3); font-size: 11px; }
 
-    .code-line {
+    .fh-sev-filter {
       display: flex;
-      gap: 12px;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: var(--text-2);
+      cursor: pointer;
     }
 
-    .code-line-num {
+    .fh-autofixable {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: var(--text-2);
+    }
+
+    .toggle-switch {
+      width: 26px;
+      height: 14px;
+      background: var(--blue);
+      border-radius: 7px;
+      position: relative;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: white;
+      border-radius: 50%;
+      top: 2px;
+      right: 2px;
+      transition: all 0.2s;
+    }
+
+    .fh-spacer { flex: 1; }
+
+    .fh-sort {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: var(--text-2);
+    }
+
+    .fh-sort select {
+      background: var(--bg-3);
+      border: 1px solid var(--border-2);
+      border-radius: var(--radius-sm);
+      padding: 2px 18px 2px 6px;
+      color: var(--text-1);
+      font-size: 11px;
+      font-family: inherit;
+      cursor: pointer;
+      outline: none;
+      appearance: none;
+    }
+
+    .fh-sort-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .fh-sort-wrap::after {
+      content: '▾';
+      position: absolute;
+      right: 5px;
       color: var(--text-3);
-      min-width: 28px;
+      font-size: 9px;
+      pointer-events: none;
+    }
+
+    /* ── FINDINGS LIST (scrollable right panel) ── */
+    .findings-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 6px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    /* ── BREADCRUMB / PATH BAR ── */
+    .finding-path-bar {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 10px;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius) var(--radius) 0 0;
+      font-size: 10.5px;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .path-arrow { color: var(--text-3); }
+
+    .path-check { color: var(--green); font-size: 11px; }
+
+    .path-label {
+      color: var(--text-2);
+      font-weight: 500;
+    }
+
+    .path-person { color: var(--text-3); font-size: 11px; }
+
+    .path-file-chip {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--bg-3);
+      border: 1px solid var(--border-2);
+      border-radius: 3px;
+      padding: 1px 6px;
+      font-size: 10.5px;
+      color: var(--text-1);
+      cursor: pointer;
+    }
+
+    .path-file-chip .chip-dot { color: var(--blue-bright); font-size: 9px; }
+    .path-file-chip .chip-arrow { color: var(--text-3); font-size: 9px; }
+
+    .path-link {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      color: var(--teal);
+      font-size: 10.5px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .path-link:hover { text-decoration: underline; }
+
+    .path-issues-badge {
+      background: var(--red-dim);
+      border: 1px solid var(--red-border);
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-size: 10px;
+      color: var(--red);
+      font-weight: 600;
+    }
+
+    .path-spacer { flex: 1; }
+
+    .path-line-info {
+      font-size: 10.5px;
+      color: var(--text-2);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .path-nav-btn {
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-3);
+      border: 1px solid var(--border-2);
+      border-radius: 3px;
+      cursor: pointer;
+      color: var(--text-2);
+      font-size: 10px;
+      transition: all 0.12s;
+    }
+
+    .path-nav-btn:hover { background: var(--bg-hover); color: var(--text-1); }
+
+    /* ── FINDING CARD (expanded) ── */
+    .finding-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .finding-card:hover { border-color: var(--border-2); }
+
+    .finding-card.expanded {
+      border-color: var(--border-2);
+      border-top: 0;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+
+    .finding-card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+    }
+
+    .fc-sev-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+
+    .fc-sev-icon.high   { background: var(--red);    color: #fff; }
+    .fc-sev-icon.medium { background: var(--orange);  color: #fff; }
+    .fc-sev-icon.low    { background: var(--green);   color: #fff; }
+    .fc-sev-icon.info   { background: var(--yellow);  color: #000; }
+
+    .fc-title {
+      flex: 1;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-1);
+    }
+
+    .fc-badge {
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 3px;
+      text-transform: uppercase;
+    }
+
+    .fc-badge.critical { background: rgba(240,64,64,0.2); color: #ff6060; border: 1px solid rgba(240,64,64,0.4); }
+    .fc-badge.autofix  { background: rgba(40,168,72,0.15); color: #50d870; border: 1px solid rgba(40,168,72,0.3); }
+
+    .fc-autofix-label {
+      font-size: 10px;
+      color: var(--green);
+      white-space: nowrap;
+      font-weight: 500;
+    }
+
+    .fc-line-info {
+      font-size: 10px;
+      color: var(--text-3);
+      white-space: nowrap;
+    }
+
+    .fc-line-info span { color: var(--text-2); }
+
+    .fc-nav-btns {
+      display: flex;
+      gap: 3px;
+    }
+
+    .fc-nav {
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-3);
+      border: 1px solid var(--border-2);
+      border-radius: 3px;
+      cursor: pointer;
+      color: var(--text-2);
+      font-size: 9px;
+    }
+
+    .fc-nav:hover { color: var(--text-1); border-color: var(--blue-border); }
+
+    /* ── EXPANDED FINDING BODY ── */
+    .finding-expanded {
+      border-top: 1px solid var(--border);
+    }
+
+    .fe-location-bar {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      background: rgba(0,0,0,0.15);
+      font-size: 10.5px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .fe-loc-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+    .fe-loc-file { color: var(--teal); }
+    .fe-loc-nums { color: var(--text-3); }
+    .fe-loc-num  { color: var(--text-2); }
+
+    .fe-code-block {
+      background: var(--bg-0);
+      padding: 8px 12px;
+      font-family: 'Consolas', 'Cascadia Code', monospace;
+      font-size: 11.5px;
+      line-height: 1.6;
+      overflow-x: auto;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .code-ln {
+      display: flex;
+      gap: 10px;
+    }
+
+    .code-ln-num {
+      color: var(--text-3);
+      min-width: 24px;
       text-align: right;
       user-select: none;
       flex-shrink: 0;
     }
 
-    .code-line-text { color: var(--text-1); white-space: pre; }
-    .code-line.highlight-line .code-line-text { color: var(--red); }
-    .code-line.highlight-line { background: rgba(248,81,73,0.08); margin: 0 -14px; padding: 0 14px; border-left: 2px solid var(--red); }
+    .code-ln-text { color: var(--text-1); white-space: pre; }
 
-    /* ── AI Panel ── */
-    .ai-panel {
-      background: linear-gradient(135deg, rgba(56,139,253,0.06) 0%, rgba(57,208,216,0.04) 100%);
-      border: 1px solid var(--blue-border);
-      border-radius: var(--radius);
-      overflow: hidden;
-    }
+    .code-ln.hl { background: rgba(240,64,64,0.08); margin: 0 -12px; padding: 0 12px; border-left: 2px solid var(--red); }
+    .code-ln.hl .code-ln-text { color: var(--red); }
 
-    .ai-header {
+    .fe-hint {
       display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 14px;
-      border-bottom: 1px solid rgba(56,139,253,0.2);
-      background: rgba(56,139,253,0.06);
-    }
-
-    .ai-avatar {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--blue) 0%, var(--cyan) 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      flex-shrink: 0;
-    }
-
-    .ai-name {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text-1);
-    }
-
-    .ai-role {
-      font-size: 10px;
-      color: var(--blue);
-    }
-
-    .ai-body { padding: 14px; }
-
-    .ai-desc {
-      font-size: 12px;
+      align-items: flex-start;
+      gap: 6px;
+      padding: 6px 12px;
+      font-size: 11px;
       color: var(--text-2);
-      line-height: 1.7;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0,0,0,0.1);
     }
 
-    /* ── Actions Bar ── */
-    .detail-actions {
-      display: flex;
-      gap: 8px;
-      padding: 12px 16px;
-      border-top: 1px solid var(--border);
-      background: var(--bg-2);
-      flex-shrink: 0;
-    }
+    .fe-hint-dot { color: var(--text-3); margin-top: 1px; flex-shrink: 0; }
 
-    .daction-btn {
+    .fe-actions {
       display: flex;
       align-items: center;
-      gap: 7px;
-      padding: 8px 18px;
+      gap: 6px;
+      padding: 8px 12px;
+    }
+
+    .fe-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
       border-radius: var(--radius-sm);
-      font-size: 13px;
+      font-size: 11.5px;
       font-weight: 600;
       cursor: pointer;
       font-family: inherit;
@@ -836,136 +1028,207 @@ export function getResultsPanelHtml(scanId?: number | null): string {
       transition: all 0.15s;
     }
 
-    .daction-open {
+    .fe-btn-ghost {
       background: var(--bg-3);
       color: var(--text-1);
       border: 1px solid var(--border-2);
     }
 
-    .daction-open:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-dim); }
+    .fe-btn-ghost:hover { border-color: var(--blue-border); color: var(--blue-bright); }
 
-    .daction-fix {
-      background: var(--green);
-      color: #0a0f14;
+    .fe-btn-fix {
+      background: linear-gradient(90deg, #1a5ec8, #2070e0);
+      color: #fff;
     }
 
-    .daction-fix:hover { background: #2ea043; }
+    .fe-btn-fix:hover { background: linear-gradient(90deg, #1f6adb, #2880f5); }
 
-    .daction-spacer { flex: 1; }
+    .fe-btn-fix-icon { font-size: 12px; }
 
-    /* ──────────────────────────────────────────────
-       LOADING / SKELETON
-    ────────────────────────────────────────────── */
+    /* ── COMPACT FINDING ROW ── */
+    .finding-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.12s;
+      border-left: 3px solid transparent;
+    }
+
+    .finding-row:hover { background: var(--bg-hover); border-color: var(--border-2); }
+
+    .finding-row.sev-high   { border-left-color: var(--red); }
+    .finding-row.sev-medium { border-left-color: var(--orange); }
+    .finding-row.sev-low    { border-left-color: var(--green); }
+
+    .fr-sev-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+
+    .fr-sev-icon.high   { background: var(--red);    color: #fff; }
+    .fr-sev-icon.medium { background: var(--orange);  color: #fff; }
+    .fr-sev-icon.low    { background: var(--green);   color: #fff; }
+
+    .fr-title {
+      flex: 1;
+      font-size: 12px;
+      color: var(--text-1);
+      font-weight: 500;
+    }
+
+    .fr-badge {
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+
+    .fr-badge.on-prod { background: rgba(40,168,72,0.15); color: #50d870; border: 1px solid rgba(40,168,72,0.3); }
+
+    .fr-line {
+      font-size: 10px;
+      color: var(--text-3);
+      white-space: nowrap;
+    }
+
+    .fr-line span { color: var(--text-2); }
+
+    .fr-nav-btns { display: flex; gap: 3px; }
+
+    .fr-nav {
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-3);
+      border: 1px solid var(--border-2);
+      border-radius: 2px;
+      cursor: pointer;
+      color: var(--text-2);
+      font-size: 9px;
+    }
+
+    .fr-nav:hover { color: var(--text-1); }
+
+    .fr-sev-chip {
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 3px;
+      text-transform: uppercase;
+    }
+
+    .fr-sev-chip.high   { background: var(--red-dim);    color: var(--red);    border: 1px solid var(--red-border); }
+    .fr-sev-chip.medium { background: var(--orange-dim); color: var(--orange); border: 1px solid var(--orange-border); }
+    .fr-sev-chip.low    { background: var(--green-dim);  color: var(--green);  border: 1px solid var(--green-border); }
+
+    /* ── FOOTER ── */
+    .footer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 14px;
+      background: var(--bg-1);
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .footer-info {
+      font-size: 10.5px;
+      color: var(--text-2);
+    }
+
+    .footer-spacer { flex: 1; }
+
+    .footer-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      border: none;
+      transition: all 0.15s;
+    }
+
+    .footer-btn.analyze {
+      background: linear-gradient(90deg, #1a5ec8, #2070e0);
+      color: #fff;
+    }
+    .footer-btn.analyze:hover { filter: brightness(1.1); }
+
+    .footer-btn.fix {
+      background: linear-gradient(90deg, #1a7a30, #22943c);
+      color: #fff;
+    }
+    .footer-btn.fix:hover { filter: brightness(1.1); }
+
+    .footer-btn.export {
+      background: var(--blue-bright);
+      color: #fff;
+    }
+    .footer-btn.export:hover { filter: brightness(1.1); }
+
+    .footer-btn.back {
+      background: var(--bg-3);
+      border: 1px solid var(--border-2);
+      color: var(--text-2);
+      padding: 5px 8px;
+    }
+    .footer-btn.back:hover { color: var(--text-1); }
+
+    /* ── LOADING ── */
     .loading-overlay {
       position: absolute;
       inset: 0;
-      background: var(--bg-1);
+      background: var(--bg-0);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 16px;
+      gap: 14px;
       z-index: 100;
     }
 
     .spinner {
-      width: 36px;
-      height: 36px;
+      width: 30px;
+      height: 30px;
       border: 3px solid var(--border-2);
       border-top-color: var(--blue);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
 
-    .loading-text {
-      font-size: 13px;
-      color: var(--text-2);
-      font-weight: 500;
-    }
+    .loading-text { font-size: 12px; color: var(--text-2); }
 
-    .skeleton {
-      background: linear-gradient(90deg, var(--bg-3) 25%, var(--bg-hover) 50%, var(--bg-3) 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-      border-radius: 4px;
-    }
+    /* ── ANIMATIONS ── */
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ──────────────────────────────────────────────
-       FOOTER
-    ────────────────────────────────────────────── */
-    .footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 7px 16px;
-      background: var(--bg-2);
-      border-top: 1px solid var(--border);
-      flex-shrink: 0;
-    }
-
-    .footer-left { font-size: 10px; color: var(--text-3); display: flex; gap: 12px; }
-    .footer-right { display: flex; gap: 8px; }
-
-    .footer-btn {
-      padding: 5px 14px;
-      border-radius: var(--radius-sm);
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: inherit;
-      border: none;
-      transition: all 0.15s;
-    }
-
-    .footer-btn.primary { background: var(--blue); color: #fff; }
-    .footer-btn.primary:hover { background: #1f6feb; }
-    .footer-btn.success { background: var(--green); color: #0a0f14; }
-    .footer-btn.success:hover { background: #2ea043; }
-    .footer-btn.ghost { background: var(--bg-3); color: var(--text-2); border: 1px solid var(--border-2); }
-    .footer-btn.ghost:hover { border-color: var(--border-2); color: var(--text-1); }
-
-    /* ──────────────────────────────────────────────
-       ANIMATIONS
-    ────────────────────────────────────────────── */
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    @keyframes shimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
-
-    @keyframes slide-in {
-      from { opacity: 0; transform: translateX(-6px); }
-      to   { opacity: 1; transform: translateX(0); }
-    }
-
-    @keyframes fade-up {
-      from { opacity: 0; transform: translateY(8px); }
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(4px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    @keyframes pulse-dot {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
+    .fade-in { animation: fade-in 0.2s ease forwards; }
 
-    @keyframes pulse-border {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(56,139,253,0.3); }
-      50% { box-shadow: 0 0 0 4px rgba(56,139,253,0); }
-    }
-
-    @keyframes arrow-pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-
-    .fade-up { animation: fade-up 0.3s ease forwards; }
-
-    /* no results */
     .no-results {
-      padding: 32px 16px;
+      padding: 24px;
       text-align: center;
       color: var(--text-3);
       font-size: 12px;
@@ -978,115 +1241,155 @@ export function getResultsPanelHtml(scanId?: number | null): string {
   <!-- LOADING OVERLAY -->
   <div class="loading-overlay" id="loading-overlay">
     <div class="spinner"></div>
-    <div class="loading-text" id="loading-text">Fetching vulnerabilities...</div>
+    <div class="loading-text">Fetching vulnerabilities...</div>
   </div>
 
-  <!-- TOP BAR -->
-  <div class="topbar">
-    <div class="topbar-logo">
-      <div class="logo-icon">&#x1F6E1;</div>
-      <span class="logo-text">Checkmar<span>kX</span></span>
+  <!-- TAB BAR -->
+  <div class="tab-bar">
+    <div class="tab-item active">
+      <span class="tab-checkmark">&#x2713;</span>
+      <span>CheckmarkX Results</span>
+      <span class="tab-close" onclick="newScan()">&#x2715;</span>
     </div>
-    <span class="scan-id-pill" id="scan-id-pill">Scan #&mdash;</span>
-    <span class="status-badge loading" id="status-badge">
-      <span class="status-dot pulse"></span>
-      <span id="status-text">Loading</span>
-    </span>
-    <div class="topbar-spacer"></div>
-    <div class="topbar-actions">
-      <button class="topbar-btn" onclick="exportReport()">&#x21A5; Export</button>
-      <button class="topbar-btn" onclick="newScan()">&#x21A9; New Scan</button>
-    </div>
-  </div>
-
-  <!-- SUMMARY ROW -->
-  <div class="summary-row" id="summary-row">
-    <div class="scard total" onclick="filterSev(null)" id="sc-total">
-      <span class="scard-icon">&#x2261;</span>
-      <div>
-        <div class="scard-count" id="cnt-total">&#x2014;</div>
-        <div class="scard-label">Total</div>
+    <div class="tab-spacer"></div>
+    <div class="tab-search">
+      <div class="tab-search-inner">
+        <span style="color:var(--text-3);font-size:11px;">&#x1F50D;</span>
+        <input type="text" placeholder="Search..." id="tab-search-input" oninput="applyFilters()" />
       </div>
     </div>
+    <div class="win-btns">
+      <div class="win-btn minimize">&#x2212;</div>
+      <div class="win-btn restore">&#x25A1;</div>
+      <div class="win-btn close" onclick="newScan()">&#x2715;</div>
+    </div>
+    <div class="tab-icon-btn" title="Settings">&#x2699;</div>
+  </div>
+
+  <!-- ANALYSIS COMPLETE BANNER -->
+  <div class="analysis-banner">
+    <span class="banner-check">&#x2714;</span>
+    <span class="banner-text"><strong>Analysis Complete!</strong> Review the findings below.</span>
+  </div>
+
+  <!-- SUMMARY CARDS -->
+  <div class="summary-row">
     <div class="scard high" onclick="filterSev('HIGH')" id="sc-high">
-      <span class="scard-icon">&#x26D4;</span>
-      <div>
+      <div class="scard-icon-wrap">&#x26A0;</div>
+      <div class="scard-body">
         <div class="scard-count" id="cnt-high">&#x2014;</div>
-        <div class="scard-label">High</div>
+        <div class="scard-label">High Issues</div>
       </div>
     </div>
     <div class="scard medium" onclick="filterSev('MEDIUM')" id="sc-medium">
-      <span class="scard-icon">&#x26A0;</span>
-      <div>
+      <div class="scard-icon-wrap">&#x26A0;</div>
+      <div class="scard-body">
         <div class="scard-count" id="cnt-medium">&#x2014;</div>
-        <div class="scard-label">Medium</div>
+        <div class="scard-label">Medium Issues</div>
       </div>
     </div>
     <div class="scard low" onclick="filterSev('LOW')" id="sc-low">
-      <span class="scard-icon">&#x2714;</span>
-      <div>
+      <div class="scard-icon-wrap">&#x2714;</div>
+      <div class="scard-body">
         <div class="scard-count" id="cnt-low">&#x2014;</div>
-        <div class="scard-label">Low</div>
+        <div class="scard-label">Low Issues</div>
       </div>
     </div>
-    <div class="scard info" onclick="filterSev('INFO')" id="sc-info">
-      <span class="scard-icon">&#x2139;</span>
-      <div>
-        <div class="scard-count" id="cnt-info">&#x2014;</div>
-        <div class="scard-label">Info</div>
+    <div class="scard total" onclick="filterSev(null)" id="sc-total">
+      <div class="scard-icon-wrap">&#x2261;</div>
+      <div class="scard-body">
+        <div class="scard-count" id="cnt-total">&#x2014;</div>
+        <div class="scard-label">Total Findings</div>
       </div>
     </div>
   </div>
 
   <!-- ACTION BAR -->
   <div class="action-bar">
-    <button class="abtn abtn-primary" onclick="analyzeSelected()">&#x1F50D; Analyze Selected</button>
-    <button class="abtn abtn-success" onclick="fixSelected()">&#x26A1; Fix with Copilot</button>
-    <div class="search-wrap">
-      <span class="search-icon">&#x1F50D;</span>
-      <input type="text" id="search-input" placeholder="Search vulnerabilities..." oninput="applyFilters()" />
+    <div class="abtn-group">
+      <button class="abtn abtn-primary" onclick="analyzeSelected()">&#x1F50D; Analyze Selected</button>
+      <button class="abtn-arrow" title="Options">&#x276F;</button>
     </div>
-    <select class="pill-select" id="sev-filter" onchange="applyFilters()">
-      <option value="">All Severities</option>
-      <option value="HIGH">High</option>
-      <option value="MEDIUM">Medium</option>
-      <option value="LOW">Low</option>
-      <option value="INFO">Info</option>
-    </select>
-    <select class="pill-select" id="sort-select" onchange="applyFilters()">
-      <option value="severity">Severity</option>
-      <option value="name">Name</option>
-      <option value="file">File</option>
-      <option value="line">Line</option>
-    </select>
+    <div class="abtn-group">
+      <button class="abtn abtn-success" onclick="fixSelected()">&#x26A1; Fix Selected</button>
+      <button class="abtn-arrow abtn-success" style="background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.1);" title="Options">&#x276F;</button>
+    </div>
+    <div class="action-sep"></div>
+    <div class="filter-search">
+      <span class="si">&#x1F50D;</span>
+      <input type="text" id="search-input" placeholder="Filter issues..." oninput="applyFilters()" />
+    </div>
+    <div class="pill-select-wrap">
+      <span style="font-size:10px;margin-right:2px;">&#x25A0;</span>
+      <select id="file-filter" onchange="applyFilters()">
+        <option value="">All</option>
+      </select>
+      <span style="font-size:9px;color:var(--text-3);">&#x25BE;</span>
+    </div>
+    <div class="pill-select-wrap">
+      <span style="font-size:10px;margin-right:2px;color:var(--text-3);">&#x25BC;</span>
+      <select id="sort-select" onchange="applyFilters()">
+        <option value="severity">Severity</option>
+        <option value="name">Name</option>
+        <option value="file">File</option>
+        <option value="line">Line</option>
+      </select>
+      <span style="font-size:9px;color:var(--text-3);">&#x25BE;</span>
+    </div>
   </div>
 
   <!-- BODY -->
   <div class="body">
 
-    <!-- LEFT: VULN LIST -->
+    <!-- LEFT: FILE TREE -->
     <div class="left-panel">
       <div class="left-header">
-        <span class="left-header-title">&#x26A0; Vulnerabilities</span>
-        <span class="left-count" id="list-count">0</span>
+        <div class="left-header-title">
+          Files
+          <span class="left-header-chevron">&#x25BE;</span>
+        </div>
+        <div class="left-header-icons">
+          <div class="lh-icon" title="List view">&#x2630;</div>
+          <div class="lh-icon" title="Collapse all">&#x2B1C;</div>
+        </div>
       </div>
-      <div class="vuln-list" id="vuln-list">
-        <div class="no-results">Loading results...</div>
+      <div class="file-tree" id="file-tree">
+        <div class="no-results">Loading files...</div>
       </div>
-      <div class="load-more-wrap" id="load-more-wrap" style="display:none;">
-        <button class="load-more-btn" id="load-more-btn" onclick="loadMore()">Load More</button>
-      </div>
+      <div class="left-footer" id="left-footer">Directory: — Scanned, — issues</div>
     </div>
 
-    <!-- RIGHT: DETAIL PANEL -->
-    <div class="right-panel" id="right-panel">
-      <div class="empty-state" id="empty-state">
-        <div class="empty-icon">&#x1F6E1;</div>
-        <div>Select a vulnerability to view details</div>
+    <!-- RIGHT: FINDINGS PANEL -->
+    <div class="right-panel">
+      <div class="findings-header">
+        <div class="fh-file-tab">
+          <span id="fh-filename">—</span>
+          <span class="fh-count-badge" id="fh-file-count">0</span>
+        </div>
+        <span class="fh-sep">|</span>
+        <div class="fh-sev-filter">
+          <span>All Severities</span>
+        </div>
+        <div class="fh-autofixable">
+          <div class="toggle-switch" id="autofix-toggle" onclick="toggleAutofix()"></div>
+          <span>Auto-Fixable</span>
+        </div>
+        <div class="fh-spacer"></div>
+        <div class="fh-sort">
+          Sort by:
+          <div class="fh-sort-wrap">
+            <select onchange="applyFilters()">
+              <option>Severity</option>
+              <option>Name</option>
+              <option>Line</option>
+            </select>
+          </div>
+          <span style="color:var(--text-3);font-size:10px;">&#x25BE;</span>
+        </div>
       </div>
-      <div id="detail-view" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
-        <div class="detail-scroll" id="detail-scroll"></div>
-        <div class="detail-actions" id="detail-actions"></div>
+
+      <div class="findings-scroll" id="findings-scroll">
+        <div class="no-results">Loading findings...</div>
       </div>
     </div>
 
@@ -1094,15 +1397,12 @@ export function getResultsPanelHtml(scanId?: number | null): string {
 
   <!-- FOOTER -->
   <div class="footer">
-    <div class="footer-left">
-      <span id="footer-scan">Scan ID: &mdash;</span>
-      <span id="footer-count">0 findings</span>
-    </div>
-    <div class="footer-right">
-      <button class="footer-btn primary" onclick="analyzeAll()">&#x1F50D; Analyze All</button>
-      <button class="footer-btn success" onclick="fixAll()">&#x26A1; Fix All</button>
-      <button class="footer-btn ghost" onclick="exportReport()">&#x21A5; Export</button>
-    </div>
+    <span class="footer-info" id="footer-info">Directory: — Scanned, — Issues</span>
+    <div class="footer-spacer"></div>
+    <button class="footer-btn analyze" onclick="analyzeAll()">&#x1F50D; Analyze All</button>
+    <button class="footer-btn fix" onclick="fixAll()">&#x26A1; Fix All</button>
+    <button class="footer-btn export" onclick="exportReport()">&#x21A5; Export Report</button>
+    <button class="footer-btn back" onclick="newScan()" title="Back">&#x21A9;</button>
   </div>
 
 </div>
@@ -1110,76 +1410,48 @@ export function getResultsPanelHtml(scanId?: number | null): string {
 <script>
   const vscode = acquireVsCodeApi();
 
-  /* ─── State ─── */
-  let allResults   = [];
-  let filtered     = [];
-  let selectedIdx  = -1;
-  let sevFilter    = null;
-  let currentScanId = ${JSON.stringify(sid)};
-  let offset       = 0;
-  let limit        = 10;
-  let hasMore      = false;
-  let isFetching   = false;
+  let allResults     = [];
+  let filtered       = [];
+  let selectedFile   = null;
+  let expandedIdx    = 0;
+  let sevFilter      = null;
+  let autofixOnly    = false;
+  let currentScanId  = ${JSON.stringify(sid)};
+  let isFetching     = false;
+  const PAGE_SIZE    = 20;
+  const API_BASE     = 'http://localhost:8888';
 
-  const API_BASE = 'http://localhost:8888';
-
-  /* ─── Init ─── */
+  /* ─── Message / Init ─── */
   window.addEventListener('message', (event) => {
     const msg = event.data;
     if (msg.type === 'LOAD_RESULTS') {
       if (msg.scanId) currentScanId = msg.scanId;
-      if (msg.data) {
-        ingestApiResults(msg.data);
-        hideLoading();
-        return;
-      }
+      if (msg.data) { ingestApiResults(msg.data); hideLoading(); return; }
     }
-    if (msg.type === 'SET_SCAN_ID') {
-      currentScanId = msg.scanId;
-      startFetch();
-    }
+    if (msg.type === 'SET_SCAN_ID') { currentScanId = msg.scanId; startFetch(); }
   });
 
   document.addEventListener('DOMContentLoaded', () => {
-    updateScanIdUI();
-    if (currentScanId) {
-      startFetch();
-    } else {
-      setStatus('Awaiting scan ID...', 'loading');
-    }
+    if (currentScanId) { startFetch(); }
+    else { setLoadingText('Awaiting scan ID...'); }
   });
 
   function startFetch() {
-    updateScanIdUI();
-    offset = 0;
+    setLoadingText('Fetching vulnerabilities...');
+    showLoading();
     allResults = [];
-    filtered = [];
-    setStatus('Fetching...', 'loading');
-    showLoading('Fetching vulnerabilities...');
     fetchResults();
-  }
-
-  function updateScanIdUI() {
-    if (currentScanId) {
-      document.getElementById('scan-id-pill').textContent = 'Scan #' + currentScanId;
-      document.getElementById('footer-scan').textContent = 'Scan ID: ' + currentScanId;
-    }
   }
 
   async function fetchResults() {
     if (isFetching) return;
     isFetching = true;
-
-    const url = API_BASE + '/cxrestapi/help/sast/results?scanId=' + currentScanId
-      + '&offset=' + offset + '&limit=' + limit;
-
+    const url = API_BASE + '/cxrestapi/help/sast/results?scanId=' + currentScanId + '&offset=0&limit=' + PAGE_SIZE;
     try {
       const resp = await fetch(url);
       if (!resp.ok) throw new Error('HTTP ' + resp.status);
-      const json = await resp.json();
-      ingestApiResults(json);
-    } catch (e) {
-      setStatus('Fetch error — showing demo data', 'loading');
+      ingestApiResults(await resp.json());
+    } catch {
       ingestApiResults(getDemoData());
     } finally {
       isFetching = false;
@@ -1189,543 +1461,531 @@ export function getResultsPanelHtml(scanId?: number | null): string {
 
   function ingestApiResults(json) {
     const items = extractResults(json);
-    if (offset === 0) {
-      allResults = items;
-    } else {
-      allResults = allResults.concat(items);
-    }
-
-    hasMore = items.length >= limit;
-    offset += items.length;
-
+    allResults = items;
     applyFilters();
     updateSummary();
-    setStatus('Analysis Complete', 'done');
-
-    const wrap = document.getElementById('load-more-wrap');
-    if (hasMore) {
-      wrap.style.display = 'block';
-      document.getElementById('load-more-btn').disabled = false;
-    } else {
-      wrap.style.display = 'none';
-    }
+    buildFileTree();
+    hideLoading();
   }
 
   function extractResults(json) {
     if (Array.isArray(json)) return json;
-    if (json && Array.isArray(json.results)) return json.results;
-    if (json && json.data && Array.isArray(json.data)) return json.data;
-    if (json && json.vulnerabilities) return json.vulnerabilities;
+    if (json?.results && Array.isArray(json.results)) return json.results;
+    if (json?.data && Array.isArray(json.data)) return json.data;
+    if (json?.vulnerabilities) return json.vulnerabilities;
     return [];
-  }
-
-  function loadMore() {
-    document.getElementById('load-more-btn').disabled = true;
-    fetchResults();
   }
 
   /* ─── Summary ─── */
   function updateSummary() {
-    const counts = { HIGH: 0, MEDIUM: 0, LOW: 0, INFO: 0, total: 0 };
+    const c = { HIGH: 0, MEDIUM: 0, LOW: 0, total: 0 };
+    allResults.forEach(r => { c.total++; const s = normSev(r); if (c[s] !== undefined) c[s]++; });
+    setTxt('cnt-high',   c.HIGH);
+    setTxt('cnt-medium', c.MEDIUM);
+    setTxt('cnt-low',    c.LOW);
+    setTxt('cnt-total',  c.total);
+    setTxt('footer-info', 'Directory: ' + getUniqueFiles().length + ' Scanned, ' + c.total + ' Issues');
+    setTxt('left-footer', 'Directory: ' + getUniqueFiles().length + ' Scanned, ' + c.total + ' issues');
+  }
+
+  function getUniqueFiles() {
+    const seen = new Set();
+    allResults.forEach(r => { const f = getFileName(r); if (f) seen.add(f); });
+    return [...seen];
+  }
+
+  /* ─── File Tree ─── */
+  function buildFileTree() {
+    const fileMap = new Map();
     allResults.forEach(r => {
-      counts.total++;
-      const s = normSev(r);
-      if (counts[s] !== undefined) counts[s]++;
-      else counts.INFO++;
+      const f = getFileName(r);
+      if (!f) return;
+      if (!fileMap.has(f)) fileMap.set(f, []);
+      fileMap.get(f).push(r);
     });
 
-    setCount('cnt-total', counts.total);
-    setCount('cnt-high',  counts.HIGH);
-    setCount('cnt-medium',counts.MEDIUM);
-    setCount('cnt-low',   counts.LOW);
-    setCount('cnt-info',  counts.INFO);
+    const fileEl = document.getElementById('file-tree');
+    fileEl.innerHTML = '';
 
-    document.getElementById('footer-count').textContent = counts.total + ' finding' + (counts.total !== 1 ? 's' : '');
+    const select = document.getElementById('file-filter');
+    select.innerHTML = '<option value="">All</option>';
+
+    const folders = new Map();
+    fileMap.forEach((items, filePath) => {
+      const parts = filePath.replace(/\\\\/g, '/').split('/');
+      const name  = parts[parts.length - 1];
+      const dir   = parts.length > 1 ? parts[parts.length - 2] : '';
+
+      if (dir && dir !== name) {
+        if (!folders.has(dir)) folders.set(dir, []);
+        folders.get(dir).push({ filePath, name, items });
+      } else {
+        appendFileNode(fileEl, filePath, name, items, false);
+      }
+
+      const opt = document.createElement('option');
+      opt.value = filePath;
+      opt.textContent = name;
+      select.appendChild(opt);
+    });
+
+    folders.forEach((children, folder) => {
+      const folderEl = document.createElement('div');
+      folderEl.innerHTML = '<div class="tree-folder" onclick="toggleFolder(this)">'
+        + '<span class="tree-folder-icon">&#x1F4C1;</span>'
+        + '<span class="tree-folder-chevron">&#x25BE;</span>'
+        + '<span class="tree-folder-name">' + escHtml(folder) + '</span>'
+        + '<span class="tree-folder-count">' + children.length + ' files</span>'
+        + '</div>';
+
+      const childWrap = document.createElement('div');
+      childWrap.className = 'tree-folder-child';
+
+      children.forEach(({ filePath, name, items }) => {
+        appendFileNode(childWrap, filePath, name, items, true);
+      });
+
+      folderEl.appendChild(childWrap);
+      fileEl.appendChild(folderEl);
+    });
+
+    if (!selectedFile && fileMap.size > 0) {
+      selectedFile = [...fileMap.keys()][0];
+      applyFilters();
+    }
+
+    refreshActiveFile();
   }
 
-  function setCount(id, n) {
-    document.getElementById(id).textContent = n;
+  function appendFileNode(parent, filePath, name, items, indent) {
+    const ext = name.split('.').pop().toLowerCase();
+    const highs   = items.filter(r => normSev(r) === 'HIGH').length;
+    const mediums  = items.filter(r => normSev(r) === 'MEDIUM').length;
+    const lows     = items.filter(r => normSev(r) === 'LOW').length;
+    const total    = items.length;
+
+    const div = document.createElement('div');
+    div.dataset.file = filePath;
+
+    const iconClass = ['js','ts','tsx','jsx'].includes(ext) ? ext.slice(0,2) :
+                      ext === 'py' ? 'py' : ext === 'sql' ? 'sql' : 'js';
+
+    const iconLabel = ext === 'py' ? 'PY' : ext === 'sql' ? 'SQ' :
+                      ext.slice(0,2).toUpperCase();
+
+    const barWidth = 50;
+    const totalBar = highs + mediums + lows || 1;
+    const hW = Math.round((highs / totalBar) * barWidth);
+    const mW = Math.round((mediums / totalBar) * barWidth);
+    const lW = barWidth - hW - mW;
+
+    div.innerHTML = '<div class="tree-file" onclick="selectFile(\'' + escHtml(filePath) + '\')">'
+      + '<div class="tree-file-icon ' + iconClass + '">' + iconLabel + '</div>'
+      + '<span class="tree-file-name">' + escHtml(name) + '</span>'
+      + '<span class="tree-file-count">' + total + ' issues</span>'
+      + '</div>'
+      + '<div class="tree-file-bars">'
+      + (hW > 0 ? '<div class="bar-seg red" style="width:' + hW + 'px"></div>' : '')
+      + (mW > 0 ? '<div class="bar-seg orange" style="width:' + mW + 'px"></div>' : '')
+      + (lW > 0 ? '<div class="bar-seg green" style="width:' + Math.max(1, lW) + 'px"></div>' : '')
+      + '</div>'
+      + '<div class="tree-file-row2">'
+      + '<span class="tree-nums">' + highs + ' &nbsp; ' + lows + '</span>'
+      + '</div>';
+
+    div.querySelector('.tree-file').addEventListener('click', () => selectFile(filePath));
+    parent.appendChild(div);
   }
 
-  /* ─── Severity helpers ─── */
-  function normSev(r) {
-    const raw = (r.severity || r.data?.severity || '').toUpperCase();
-    if (['CRITICAL','HIGH'].includes(raw)) return 'HIGH';
-    if (raw === 'MEDIUM') return 'MEDIUM';
-    if (raw === 'LOW') return 'LOW';
-    return 'INFO';
+  function refreshActiveFile() {
+    document.querySelectorAll('.tree-file').forEach(el => {
+      const parent = el.closest('[data-file]');
+      if (parent) {
+        el.classList.toggle('active', parent.dataset.file === selectedFile);
+      }
+    });
+    const fhFilename = document.getElementById('fh-filename');
+    if (selectedFile) {
+      const parts = selectedFile.replace(/\\\\/g, '/').split('/');
+      fhFilename.textContent = parts[parts.length - 1];
+    }
   }
 
-  function sevClass(sev) {
-    const s = sev.toUpperCase();
-    if (s === 'HIGH') return 'high';
-    if (s === 'MEDIUM') return 'medium';
-    if (s === 'LOW') return 'low';
-    return 'info';
+  function selectFile(filePath) {
+    selectedFile = filePath;
+    expandedIdx  = 0;
+    document.getElementById('file-filter').value = filePath;
+    applyFilters();
+    refreshActiveFile();
   }
 
-  function sevIcon(sev) {
-    const s = sev.toUpperCase();
-    if (s === 'HIGH') return '&#x26D4;';
-    if (s === 'MEDIUM') return '&#x26A0;';
-    if (s === 'LOW') return '&#x2705;';
-    return '&#x2139;';
+  function toggleFolder(el) {
+    const child = el.nextElementSibling;
+    if (child) child.style.display = child.style.display === 'none' ? '' : 'none';
   }
 
-  /* ─── Filtering & sorting ─── */
+  /* ─── Filters ─── */
   function filterSev(sev) {
     sevFilter = sev;
-    document.getElementById('sev-filter').value = sev || '';
-    ['total','high','medium','low','info'].forEach(k => {
-      document.getElementById('sc-' + k).classList.remove('active');
-    });
+    ['high','medium','low','total'].forEach(k => document.getElementById('sc-' + k).classList.remove('active'));
     if (!sev) document.getElementById('sc-total').classList.add('active');
     else document.getElementById('sc-' + sev.toLowerCase()).classList.add('active');
     applyFilters();
   }
 
+  function toggleAutofix() {
+    autofixOnly = !autofixOnly;
+    document.getElementById('autofix-toggle').style.background = autofixOnly ? 'var(--blue)' : 'var(--bg-3)';
+    applyFilters();
+  }
+
   function applyFilters() {
-    const q = document.getElementById('search-input').value.toLowerCase().trim();
-    const sevSel = document.getElementById('sev-filter').value || sevFilter;
-    const sort = document.getElementById('sort-select').value;
+    const q       = (document.getElementById('search-input').value || '').toLowerCase().trim();
+    const tabQ    = (document.getElementById('tab-search-input').value || '').toLowerCase().trim();
+    const fileSel = document.getElementById('file-filter').value || selectedFile || '';
+    const sort    = document.getElementById('sort-select').value;
 
     filtered = allResults.filter(r => {
+      if (fileSel && getFileName(r) !== fileSel) return false;
       const name = getQueryName(r).toLowerCase();
-      const file = getFileName(r).toLowerCase();
-      if (q && !name.includes(q) && !file.includes(q)) return false;
-      if (sevSel && normSev(r) !== sevSel.toUpperCase()) return false;
+      if (q && !name.includes(q)) return false;
+      if (tabQ && !name.includes(tabQ)) return false;
+      if (sevFilter && normSev(r) !== sevFilter) return false;
       return true;
     });
 
-    const sevOrder = { HIGH: 0, MEDIUM: 1, LOW: 2, INFO: 3 };
+    const sevOrd = { HIGH: 0, MEDIUM: 1, LOW: 2, INFO: 3 };
     filtered.sort((a, b) => {
-      if (sort === 'severity') return (sevOrder[normSev(a)] || 3) - (sevOrder[normSev(b)] || 3);
-      if (sort === 'name') return getQueryName(a).localeCompare(getQueryName(b));
-      if (sort === 'file') return getFileName(a).localeCompare(getFileName(b));
-      if (sort === 'line') return (getLine(a) || 0) - (getLine(b) || 0);
+      if (sort === 'severity') return (sevOrd[normSev(a)] || 3) - (sevOrd[normSev(b)] || 3);
+      if (sort === 'name')     return getQueryName(a).localeCompare(getQueryName(b));
+      if (sort === 'file')     return getFileName(a).localeCompare(getFileName(b));
+      if (sort === 'line')     return (getLine(a) || 0) - (getLine(b) || 0);
       return 0;
     });
 
-    renderList();
-
-    document.getElementById('list-count').textContent = filtered.length;
+    setTxt('fh-file-count', filtered.length);
+    renderFindings();
   }
 
-  /* ─── Field extractors (handle Checkmarx API shapes) ─── */
-  function getQueryName(r) {
-    return r.queryName || r.data?.queryName || r.name || r.title || r.type || 'Unknown Vulnerability';
-  }
-
-  function getFileName(r) {
-    const src = getSourceNode(r);
-    if (src) return src.fileName || src.file || '';
-    return r.fileName || r.data?.fileName || r.file || '';
-  }
-
-  function getLine(r) {
-    const src = getSourceNode(r);
-    if (src) return src.line || src.lineNumber || 0;
-    return r.line || r.data?.line || 0;
-  }
-
-  function getCwe(r) {
-    return r.cweId || r.data?.cweId || r.cwe || r.vulnerabilityId || '';
-  }
-
-  function getDescription(r) {
-    return r.resultDescription || r.description || r.data?.description || r.data?.resultDescription || '';
-  }
-
-  function getNodes(r) {
-    if (r.nodes && Array.isArray(r.nodes)) return r.nodes;
-    if (r.data && r.data.nodes && Array.isArray(r.data.nodes)) return r.data.nodes;
-    if (r.path && Array.isArray(r.path)) return r.path;
-    return [];
-  }
-
-  function getSourceNode(r) {
-    const nodes = getNodes(r);
-    return nodes.length ? nodes[0] : null;
-  }
-
-  function getSinkNode(r) {
-    const nodes = getNodes(r);
-    return nodes.length ? nodes[nodes.length - 1] : null;
-  }
-
-  function getCode(node) {
-    return node?.code || node?.snippet || node?.sourceCode || node?.line_content || '';
-  }
-
-  /* ─── Render list ─── */
-  function renderList() {
-    const el = document.getElementById('vuln-list');
+  /* ─── Render findings ─── */
+  function renderFindings() {
+    const container = document.getElementById('findings-scroll');
 
     if (filtered.length === 0) {
-      el.innerHTML = '<div class="no-results">No vulnerabilities match the current filter</div>';
+      container.innerHTML = '<div class="no-results">No findings match the current filter</div>';
       return;
     }
 
-    el.innerHTML = filtered.map((r, i) => {
-      const sev = normSev(r);
-      const sc  = sevClass(sev);
-      const name = escHtml(getQueryName(r));
-      const file = escHtml(shortFile(getFileName(r)));
-      const line = getLine(r);
-      const cwe  = getCwe(r);
-      const isSelected = i === selectedIdx;
+    container.innerHTML = '';
 
-      return '<div class="vuln-card sev-' + sc + (isSelected ? ' selected' : '') + '" '
-        + 'onclick="selectResult(' + i + ')" '
-        + 'style="animation-delay:' + (i * 0.03) + 's">'
-        + '<div class="vc-top">'
-        +   '<span class="sev-dot-lg ' + sc + '"></span>'
-        +   '<span class="vc-name">' + name + '</span>'
-        +   '<span class="sev-chip ' + sc + '">' + sev + '</span>'
-        + '</div>'
-        + '<div class="vc-meta">'
-        +   (file ? '<span class="meta-tag">&#x1F4C4; ' + file + '</span>' : '')
-        +   (line ? '<span class="meta-tag">&#x21E8; L' + line + '</span>' : '')
-        +   (cwe  ? '<span class="meta-tag cwe">CWE-' + cwe + '</span>' : '')
-        + '</div>'
-        + '</div>';
-    }).join('');
-  }
-
-  /* ─── Select & render detail ─── */
-  function selectResult(i) {
-    selectedIdx = i;
-    renderList();
-
-    const r = filtered[i];
-    if (!r) return;
-
-    document.getElementById('empty-state').style.display = 'none';
-    const dv = document.getElementById('detail-view');
-    dv.style.display = 'flex';
-
-    renderDetail(r);
-  }
-
-  function renderDetail(r) {
-    const sev = normSev(r);
-    const sc  = sevClass(sev);
-    const name = getQueryName(r);
-    const cwe  = getCwe(r);
-    const desc = getDescription(r);
-    const nodes = getNodes(r);
-    const src  = getSourceNode(r);
-    const sink = getSinkNode(r);
-    const srcCode  = getCode(src);
-    const sinkCode = getCode(sink);
-
-    const scroll = document.getElementById('detail-scroll');
-    scroll.innerHTML = '';
-    scroll.className = 'detail-scroll fade-up';
-
-    /* ── Header Card ── */
-    const hc = mkEl('div', 'detail-header-card');
-    hc.innerHTML = '<div class="dh-top">'
-      + '<div class="dh-sev-badge ' + sc + '">' + sevIcon(sev) + '</div>'
-      + '<div class="dh-title">' + escHtml(name) + '</div>'
-      + '</div>'
-      + '<div class="dh-pills">'
-      +   '<span class="pill sev-' + sc + '">' + sev + '</span>'
-      +   (cwe ? '<span class="pill cwe">CWE-' + escHtml(String(cwe)) + '</span>' : '')
-      +   (currentScanId ? '<span class="pill scan">Scan #' + currentScanId + '</span>' : '')
-      + '</div>';
-    scroll.appendChild(hc);
-
-    /* ── Data Flow ── */
-    if (nodes.length > 0) {
-      const flowCard = mkEl('div', 'section-card');
-      flowCard.innerHTML = '<div class="section-header">'
-        + '<span style="font-size:14px;">&#x21C4;</span>'
-        + '<span class="section-title">Data Flow</span>'
-        + '<span style="font-size:10px;color:var(--text-3);margin-left:auto;">' + nodes.length + ' nodes</span>'
-        + '</div>';
-
-      const flowBody = mkEl('div', 'flow-container');
-      const track = mkEl('div', 'flow-track');
-
-      nodes.forEach((node, ni) => {
-        if (ni > 0) {
-          const arr = mkEl('div', 'flow-arrow');
-          arr.innerHTML = '<span class="flow-arrow-animated">&#x27A1;</span>';
-          track.appendChild(arr);
-        }
-
-        const isFirst = ni === 0;
-        const isLast  = ni === nodes.length - 1;
-        const nodeEl  = mkEl('div', 'flow-node' + (isFirst ? ' source' : isLast ? ' sink' : ' middle'));
-
-        const label   = isFirst ? '<span class="fn-label source-lbl">Source</span>'
-          : isLast   ? '<span class="fn-label sink-lbl">Sink</span>'
-          : '<span class="fn-label node-lbl">Node ' + (ni + 1) + '</span>';
-
-        const nName = node.name || node.methodName || node.code || ('Node ' + (ni + 1));
-        const nFile = shortFile(node.fileName || node.file || '');
-        const nLine = node.line || node.lineNumber || '';
-
-        nodeEl.innerHTML = label
-          + '<div class="fn-name" title="' + escHtml(nName) + '">' + escHtml(truncate(nName, 28)) + '</div>'
-          + (nFile ? '<div class="fn-file" title="' + escHtml(nFile) + '">' + escHtml(nFile) + '</div>' : '')
-          + (nLine ? '<div class="fn-line">Line ' + nLine + '</div>' : '');
-
-        track.appendChild(nodeEl);
-      });
-
-      flowBody.appendChild(track);
-      flowCard.appendChild(flowBody);
-      scroll.appendChild(flowCard);
-    }
-
-    /* ── Code Snippets ── */
-    if (srcCode || sinkCode) {
-      const codeCard = mkEl('div', 'section-card');
-      codeCard.innerHTML = '<div class="section-header">'
-        + '<span style="font-size:14px;">&#x1F4C4;</span>'
-        + '<span class="section-title">Code</span>'
-        + '</div>';
-
-      if (srcCode && src) {
-        codeCard.appendChild(buildCodeBlock(
-          'Source',
-          shortFile(src.fileName || src.file || ''),
-          srcCode,
-          src.line || src.lineNumber
-        ));
+    filtered.forEach((r, i) => {
+      if (i === expandedIdx) {
+        container.appendChild(buildExpandedFinding(r, i));
+      } else {
+        container.appendChild(buildCompactFinding(r, i));
       }
-
-      if (sinkCode && sink && sink !== src) {
-        codeCard.appendChild(buildCodeBlock(
-          'Sink',
-          shortFile(sink.fileName || sink.file || ''),
-          sinkCode,
-          sink.line || sink.lineNumber
-        ));
-      }
-
-      scroll.appendChild(codeCard);
-    }
-
-    /* ── AI Panel ── */
-    if (desc) {
-      const aiCard = mkEl('div', 'ai-panel');
-      aiCard.innerHTML = '<div class="ai-header">'
-        + '<div class="ai-avatar">&#x1F916;</div>'
-        + '<div><div class="ai-name">AI Security Assistant</div>'
-        + '<div class="ai-role">Checkmarx Insights</div></div>'
-        + '</div>'
-        + '<div class="ai-body"><div class="ai-desc">' + escHtml(desc) + '</div></div>';
-      scroll.appendChild(aiCard);
-    }
-
-    /* ── Actions ── */
-    const actions = document.getElementById('detail-actions');
-    actions.innerHTML = '';
-
-    const openBtn = mkEl('button', 'daction-btn daction-open');
-    openBtn.innerHTML = '&#x1F4C2; Open File';
-    openBtn.onclick = () => openFile(r);
-    actions.appendChild(openBtn);
-
-    const fixBtn = mkEl('button', 'daction-btn daction-fix');
-    fixBtn.innerHTML = '&#x26A1; Fix with Copilot';
-    fixBtn.onclick = () => fixWithCopilot(r);
-    actions.appendChild(fixBtn);
-
-    const sp = mkEl('div', 'daction-spacer');
-    actions.appendChild(sp);
-  }
-
-  function buildCodeBlock(label, filename, rawCode, line) {
-    const wrap = mkEl('div', 'code-section');
-    const header = mkEl('div', 'code-header');
-    header.innerHTML = '<span class="code-label">&#x2756; ' + label + '</span>'
-      + (filename ? '<span class="code-filename">' + escHtml(filename) + '</span>' : '');
-    wrap.appendChild(header);
-
-    const pre = mkEl('pre', 'code-pre');
-    const lines = rawCode.split('\\n');
-    const startLine = (line && typeof line === 'number') ? Math.max(1, line) : 1;
-
-    lines.slice(0, 10).forEach((ln, i) => {
-      const lineNum = startLine + i;
-      const isHL = i === 0 && label === 'Source' || i === lines.length - 1 && label === 'Sink';
-      const lineDiv = mkEl('div', 'code-line' + (isHL ? ' highlight-line' : ''));
-      lineDiv.innerHTML = '<span class="code-line-num">' + lineNum + '</span>'
-        + '<span class="code-line-text">' + escHtml(ln) + '</span>';
-      pre.appendChild(lineDiv);
     });
+  }
 
-    wrap.appendChild(pre);
+  function buildExpandedFinding(r, i) {
+    const sev    = normSev(r);
+    const sc     = sevClass(sev);
+    const name   = getQueryName(r);
+    const nodes  = getNodes(r);
+    const src    = getSourceNode(r);
+    const file   = shortFile(getFileName(r));
+    const line   = getLine(r);
+    const srcCode = getCode(src);
+    const hint   = getDescription(r) || 'Use parameterized queries to prevent injection attacks.';
+
+    const wrap = document.createElement('div');
+    wrap.className = 'fade-in';
+
+    const pathBar = document.createElement('div');
+    pathBar.className = 'finding-path-bar';
+    pathBar.innerHTML =
+      '<span class="path-check">&#x2714;</span>'
+      + '<span class="path-label">Critical Path</span>'
+      + '<span class="path-person">&#x1F464;</span>'
+      + '<span class="path-arrow">&#x276F;</span>'
+      + '<div class="path-file-chip"><span class="chip-dot">&#x25CF;</span>'
+      + escHtml(file || name.slice(0,8).toUpperCase()) + ' <span class="chip-arrow">&#x25BE;</span></div>'
+      + '<span class="path-arrow">&#x276F;</span>'
+      + '<a class="path-link" onclick="openFile(allResults.indexOf(filtered[' + i + ']))">'
+      + '<span>&#x1F517;</span> ' + escHtml(file)
+      + '</a>'
+      + '<span class="path-issues-badge">' + filtered.length + ' issues</span>'
+      + '<span class="path-spacer"></span>'
+      + '<div class="path-line-info">'
+      + 'Line <span style="color:var(--text-1)">' + (line || '—') + '</span>'
+      + '<div class="path-nav-btn">&#x276E;</div>'
+      + '<div class="path-nav-btn">&#x276F;</div>'
+      + 'line <span style="color:var(--text-1)">1</span>'
+      + '<div class="path-nav-btn">&#x276F;</div>'
+      + '</div>';
+
+    const card = document.createElement('div');
+    card.className = 'finding-card expanded';
+
+    const header = document.createElement('div');
+    header.className = 'finding-card-header';
+    header.onclick = () => { expandedIdx = -1; renderFindings(); };
+
+    header.innerHTML =
+      '<div class="fc-sev-icon ' + sc + '">' + (sc === 'high' ? '11' : sc === 'medium' ? 'M' : 'L') + '</div>'
+      + '<div class="fc-title">' + escHtml(name) + '</div>'
+      + (sc === 'high' ? '<span class="fc-badge critical">Critical</span>' : '')
+      + '<span class="fc-autofix-label">&#x1F511; Auto-Fix Available</span>'
+      + '<span class="fc-line-info">line <span>' + (line || 1) + '</span></span>'
+      + '<div class="fc-nav-btns">'
+      + '<div class="fc-nav">&#x276E;</div>'
+      + '<div class="fc-nav">&#x276F;</div>'
+      + '</div>';
+
+    card.appendChild(header);
+
+    const body = document.createElement('div');
+    body.className = 'finding-expanded';
+
+    if (src) {
+      const locBar = document.createElement('div');
+      locBar.className = 'fe-location-bar';
+      locBar.innerHTML = '<span class="fe-loc-dot"></span>'
+        + '<span class="fe-loc-file">' + escHtml(file) + '</span>'
+        + '<span class="fe-loc-nums">, <span class="fe-loc-num">' + (src.line || line || '—') + '</span>'
+        + ' <span style="color:var(--text-3)">&#x1F464;</span>'
+        + ' <span class="fe-loc-num">' + (nodes.length || 1) + '</span></span>';
+      body.appendChild(locBar);
+    }
+
+    if (srcCode) {
+      const codeBlock = document.createElement('div');
+      codeBlock.className = 'fe-code-block';
+      const codeLines = srcCode.split('\\n');
+      const startLine = line || 1;
+      codeBlock.innerHTML = codeLines.slice(0, 5).map((ln, ci) => {
+        const num = startLine + ci;
+        const isHL = ci === 0;
+        return '<div class="code-ln' + (isHL ? ' hl' : '') + '">'
+          + '<span class="code-ln-num">' + num + '</span>'
+          + '<span class="code-ln-text">' + escHtml(ln) + '</span>'
+          + '</div>';
+      }).join('');
+      body.appendChild(codeBlock);
+    }
+
+    const hintEl = document.createElement('div');
+    hintEl.className = 'fe-hint';
+    hintEl.innerHTML = '<span class="fe-hint-dot">&#x2022;</span><span>' + escHtml(hint.slice(0, 100)) + (hint.length > 100 ? '...' : '') + '</span>';
+    body.appendChild(hintEl);
+
+    const actions = document.createElement('div');
+    actions.className = 'fe-actions';
+    actions.innerHTML =
+      '<button class="fe-btn fe-btn-ghost" onclick="analyzeItem(' + i + ')">Analyze</button>'
+      + '<button class="fe-btn fe-btn-fix" onclick="fixItem(' + i + ')"><span class="fe-btn-fix-icon">&#x26A1;</span> Fix Issue <span style="font-size:10px;opacity:0.7;">&#x276F;</span></button>';
+    body.appendChild(actions);
+
+    card.appendChild(body);
+    wrap.appendChild(pathBar);
+    wrap.appendChild(card);
     return wrap;
   }
 
+  function buildCompactFinding(r, i) {
+    const sev  = normSev(r);
+    const sc   = sevClass(sev);
+    const name = getQueryName(r);
+    const line = getLine(r);
+    const file = shortFile(getFileName(r));
+
+    const isOnProd = sev === 'MEDIUM' || sev === 'LOW';
+
+    const div = document.createElement('div');
+    div.className = 'finding-row sev-' + sc + ' fade-in';
+    div.style.animationDelay = (i * 0.02) + 's';
+    div.onclick = () => { expandedIdx = i; applyFilters(); };
+
+    div.innerHTML =
+      '<div class="fr-sev-icon ' + sc + '">' + (sc === 'high' ? '11' : sc === 'medium' ? 'M' : 'L') + '</div>'
+      + '<div class="fr-title">' + escHtml(name) + '</div>'
+      + (isOnProd && sev === 'MEDIUM' ? '<span class="fr-badge on-prod">&#x2714; on-Production</span>' : '')
+      + '<span class="fr-line">Line <span>' + (line || '—') + '</span></span>'
+      + '<div class="fr-nav-btns">'
+      + '<div class="fr-nav">&#x276E;</div>'
+      + '<div class="fr-nav">&#x276F;</div>'
+      + '</div>'
+      + '<span class="fr-sev-chip ' + sc + '">' + sev.toUpperCase() + '</span>'
+      + '<div class="fr-nav">&#x276F;</div>';
+
+    return div;
+  }
+
   /* ─── Actions ─── */
-  function openFile(r) {
+  function openFile(rawIdx) {
+    const r = allResults[rawIdx];
+    if (!r) return;
     const src = getSourceNode(r) || {};
-    const fileName = src.fileName || src.file || r.fileName || r.data?.fileName || '';
-    const lineNumber = src.line || src.lineNumber || r.line || r.data?.line || 0;
-    vscode.postMessage({ type: 'OPEN_FILE', file: fileName, line: lineNumber });
+    vscode.postMessage({ type: 'OPEN_FILE', file: src.fileName || src.file || getFileName(r), line: src.line || getLine(r) || 0 });
+  }
+
+  function analyzeItem(i) {
+    if (filtered[i]) vscode.postMessage({ type: 'ANALYZE_ISSUE', issue: filtered[i] });
+  }
+
+  function fixItem(i) {
+    if (filtered[i]) fixWithCopilot(filtered[i]);
   }
 
   function fixWithCopilot(r) {
     const src = getSourceNode(r) || {};
-    const fileName = src.fileName || src.file || r.fileName || r.data?.fileName || '';
-    const code = getCode(src) || getCode(getSinkNode(r)) || '';
-    const vulnerability = getQueryName(r);
-    const description = getDescription(r);
-    const cwe = getCwe(r);
-    const sev = normSev(r);
-
     vscode.postMessage({
       type: 'COPILOT_FIX',
       payload: {
-        fileName,
-        code,
-        vulnerability,
-        description,
-        cwe,
-        severity: sev,
-        nodes: getNodes(r)
+        fileName:    src.fileName || src.file || getFileName(r),
+        code:        getCode(src) || getCode(getSinkNode(r)) || '',
+        vulnerability: getQueryName(r),
+        description: getDescription(r),
+        cwe:         getCwe(r),
+        severity:    normSev(r),
+        nodes:       getNodes(r)
       }
     });
   }
 
-  function analyzeSelected() {
-    if (selectedIdx >= 0 && filtered[selectedIdx]) {
-      vscode.postMessage({ type: 'ANALYZE_ISSUE', issue: filtered[selectedIdx] });
-    } else {
-      vscode.postMessage({ type: 'ANALYZE_SELECTED' });
-    }
+  function analyzeSelected() { vscode.postMessage({ type: 'ANALYZE_SELECTED' }); }
+  function fixSelected()     { vscode.postMessage({ type: 'FIX_SELECTED' }); }
+  function analyzeAll()      { vscode.postMessage({ type: 'ANALYZE_ALL' }); }
+  function fixAll()          { vscode.postMessage({ type: 'FIX_ALL' }); }
+  function exportReport()    { vscode.postMessage({ type: 'EXPORT_REPORT', data: { scanId: currentScanId, results: allResults } }); }
+  function newScan()         { vscode.postMessage({ type: 'NEW_SCAN' }); }
+
+  /* ─── Field helpers ─── */
+  function normSev(r) {
+    const raw = (r.severity || r.data?.severity || '').toUpperCase();
+    if (['CRITICAL','HIGH'].includes(raw)) return 'HIGH';
+    if (raw === 'MEDIUM') return 'MEDIUM';
+    if (raw === 'LOW')    return 'LOW';
+    return 'INFO';
   }
 
-  function fixSelected() {
-    if (selectedIdx >= 0 && filtered[selectedIdx]) {
-      fixWithCopilot(filtered[selectedIdx]);
-    } else {
-      vscode.postMessage({ type: 'FIX_SELECTED' });
-    }
+  function sevClass(sev) {
+    if (sev === 'HIGH')   return 'high';
+    if (sev === 'MEDIUM') return 'medium';
+    if (sev === 'LOW')    return 'low';
+    return 'info';
   }
 
-  function analyzeAll() {
-    vscode.postMessage({ type: 'ANALYZE_ALL' });
-  }
+  function getQueryName(r)  { return r.queryName || r.data?.queryName || r.name || r.title || r.type || 'Unknown Vulnerability'; }
+  function getFileName(r)   { const s = getSourceNode(r); return s?.fileName || s?.file || r.fileName || r.data?.fileName || r.file || ''; }
+  function getLine(r)       { const s = getSourceNode(r); return s?.line || s?.lineNumber || r.line || r.data?.line || 0; }
+  function getCwe(r)        { return r.cweId || r.data?.cweId || r.cwe || r.vulnerabilityId || ''; }
+  function getDescription(r){ return r.resultDescription || r.description || r.data?.description || ''; }
+  function getNodes(r)      { return r.nodes || r.data?.nodes || r.path || []; }
+  function getSourceNode(r) { const n = getNodes(r); return n.length ? n[0] : null; }
+  function getSinkNode(r)   { const n = getNodes(r); return n.length ? n[n.length - 1] : null; }
+  function getCode(node)    { return node?.code || node?.snippet || node?.sourceCode || ''; }
+  function shortFile(p)     { if (!p) return ''; const parts = p.replace(/\\\\/g,'/').split('/'); return parts.slice(-2).join('/'); }
+  function escHtml(s)       { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function setTxt(id, v)    { const el = document.getElementById(id); if (el) el.textContent = v; }
+  function showLoading()    { document.getElementById('loading-overlay').style.display = 'flex'; }
+  function hideLoading()    { document.getElementById('loading-overlay').style.display = 'none'; }
+  function setLoadingText(t){ const el = document.querySelector('.loading-text'); if (el) el.textContent = t; }
 
-  function fixAll() {
-    vscode.postMessage({ type: 'FIX_ALL' });
-  }
-
-  function exportReport() {
-    vscode.postMessage({ type: 'EXPORT_REPORT', data: { scanId: currentScanId, results: allResults } });
-  }
-
-  function newScan() {
-    vscode.postMessage({ type: 'NEW_SCAN' });
-  }
-
-  /* ─── UI Helpers ─── */
-  function setStatus(text, type) {
-    const badge = document.getElementById('status-badge');
-    const dot   = badge.querySelector('.status-dot');
-    document.getElementById('status-text').textContent = text;
-    badge.className = 'status-badge ' + type;
-    dot.className   = 'status-dot' + (type === 'loading' ? ' pulse' : '');
-  }
-
-  function showLoading(msg) {
-    document.getElementById('loading-text').textContent = msg || 'Loading...';
-    document.getElementById('loading-overlay').style.display = 'flex';
-  }
-
-  function hideLoading() {
-    document.getElementById('loading-overlay').style.display = 'none';
-  }
-
-  function mkEl(tag, cls) {
-    const el = document.createElement(tag);
-    if (cls) el.className = cls;
-    return el;
-  }
-
-  function escHtml(s) {
-    return String(s || '')
-      .replace(/&/g,'&amp;')
-      .replace(/</g,'&lt;')
-      .replace(/>/g,'&gt;')
-      .replace(/"/g,'&quot;');
-  }
-
-  function shortFile(path) {
-    if (!path) return '';
-    const parts = path.replace(/\\\\/g,'/').split('/');
-    return parts.slice(-2).join('/');
-  }
-
-  function truncate(s, n) {
-    return s.length > n ? s.slice(0, n) + '...' : s;
-  }
-
-  /* ─── Demo data (fallback) ─── */
+  /* ─── Demo data ─── */
   function getDemoData() {
     return [
       {
-        queryName: 'Reflected XSS',
+        queryName: 'SQL Injection Vulnerability',
         severity: 'HIGH',
-        cweId: '79',
-        resultDescription: 'User-controlled data flows directly into the HTML response without proper encoding or sanitization, enabling Cross-Site Scripting attacks. An attacker can inject arbitrary JavaScript that executes in the victim browser context.',
+        cweId: '89',
+        resultDescription: 'Use parameterized queries to prevent SQL injection attacks. Unsanitized user input is concatenated directly into an SQL query.',
         nodes: [
-          { name: 'req.query.name', fileName: 'src/routes/user.js', line: 34, code: 'const name = req.query.name;' },
-          { name: 'render()', fileName: 'src/routes/user.js', line: 40, code: 'res.send("<h1>Hello " + name + "</h1>");' }
+          { name: 'req.query.id',  fileName: 'src/app.js', line: 42, code: 'const userId = req.query.id;\\nconst query = "SELECT" + " FROM : WHERE id = [\\"$\{userId\}\\"]";' },
+          { name: 'db.query()',    fileName: 'src/app.js', line: 46, code: 'db.query(query)' }
         ]
       },
       {
-        queryName: 'SQL Injection',
+        queryName: 'Cross-Site Scripting (XSS)',
         severity: 'HIGH',
-        cweId: '89',
-        resultDescription: 'Unsanitized user input is concatenated directly into an SQL query, allowing an attacker to manipulate database queries and potentially extract, modify, or delete data.',
+        cweId: '79',
+        resultDescription: 'User-controlled data flows directly into the HTML response without encoding.',
         nodes: [
-          { name: 'req.body.id', fileName: 'src/db/users.js', line: 22, code: 'const id = req.body.id;' },
-          { name: 'db.query()', fileName: 'src/db/users.js', line: 28, code: 'db.query("SELECT * FROM users WHERE id = " + id)' }
+          { name: 'req.query.name', fileName: 'src/app.js', line: 179, code: 'const name = req.query.name;' },
+          { name: 'res.send()',     fileName: 'src/app.js', line: 183, code: 'res.send("<h1>Hello " + name + "</h1>");' }
         ]
       },
       {
         queryName: 'Hardcoded Password',
-        severity: 'MEDIUM',
+        severity: 'HIGH',
         cweId: '259',
-        resultDescription: 'A hardcoded password was found in the source code. This is a security risk as anyone with access to the code can extract the credentials.',
+        resultDescription: 'A hardcoded password was found in the source code.',
         nodes: [
-          { name: 'password', fileName: 'src/config/db.js', line: 5, code: 'const password = "admin123";' }
+          { name: 'password', fileName: 'src/auth.js', line: 91, code: 'const password = "admin123";' }
+        ]
+      },
+      {
+        queryName: 'Insecure Deserialization',
+        severity: 'MEDIUM',
+        cweId: '502',
+        resultDescription: 'Deserializing untrusted data can lead to remote code execution.',
+        nodes: [
+          { name: 'JSON.parse()', fileName: 'src/auth.js', line: 108, code: 'const data = eval(input);' }
+        ]
+      },
+      {
+        queryName: 'Insufficient Input Validation',
+        severity: 'MEDIUM',
+        cweId: '20',
+        resultDescription: 'Input is not properly validated before processing.',
+        nodes: [
+          { name: 'req.body', fileName: 'src/utils.py', line: 256, code: 'process(req.body.data)' }
         ]
       },
       {
         queryName: 'Path Traversal',
         severity: 'HIGH',
         cweId: '22',
-        resultDescription: 'User-controlled input is used to construct a file path without proper validation, potentially allowing an attacker to read or write files outside the intended directory.',
+        resultDescription: 'User-controlled input is used to construct a file path without validation.',
         nodes: [
-          { name: 'req.params.file', fileName: 'src/files/serve.js', line: 15, code: 'const file = req.params.file;' },
-          { name: 'fs.readFile()', fileName: 'src/files/serve.js', line: 20, code: 'fs.readFile("/uploads/" + file, callback)' }
-        ]
-      },
-      {
-        queryName: 'Insecure Random',
-        severity: 'MEDIUM',
-        cweId: '330',
-        resultDescription: 'Math.random() is used to generate security-sensitive tokens. This function is not cryptographically secure and can be predicted by an attacker.',
-        nodes: [
-          { name: 'Math.random()', fileName: 'src/auth/tokens.js', line: 8, code: 'const token = Math.random().toString(36);' }
+          { name: 'req.params.file', fileName: 'src/utils.py', line: 15, code: 'const file = req.params.file;' },
+          { name: 'fs.readFile()',   fileName: 'src/utils.py', line: 20, code: 'fs.readFile("/uploads/" + file, cb)' }
         ]
       },
       {
         queryName: 'Missing CSRF Protection',
         severity: 'LOW',
         cweId: '352',
-        resultDescription: 'State-changing endpoints do not implement CSRF protection, allowing attackers to trick authenticated users into making unintended requests.',
+        resultDescription: 'State-changing endpoints do not implement CSRF protection.',
         nodes: [
-          { name: 'POST /delete', fileName: 'src/routes/admin.js', line: 45, code: 'app.post("/delete", deleteHandler);' }
+          { name: 'POST /delete', fileName: 'src/utils.py', line: 45, code: 'app.post("/delete", deleteHandler);' }
+        ]
+      },
+      {
+        queryName: 'Insecure Random',
+        severity: 'MEDIUM',
+        cweId: '330',
+        resultDescription: 'Math.random() is not cryptographically secure.',
+        nodes: [
+          { name: 'Math.random()', fileName: 'src/utils.py', line: 8, code: 'const token = Math.random().toString(36);' }
+        ]
+      },
+      {
+        queryName: 'DB Migration Issue',
+        severity: 'LOW',
+        cweId: '200',
+        resultDescription: 'Migration script contains sensitive data exposure.',
+        nodes: [
+          { name: 'migration', fileName: 'migrations/001_initial.sql', line: 2, code: 'ALTER TABLE users ADD COLUMN password TEXT;' }
+        ]
+      },
+      {
+        queryName: 'Weak Encryption',
+        severity: 'MEDIUM',
+        cweId: '327',
+        resultDescription: 'MD5 is not suitable for password hashing.',
+        nodes: [
+          { name: 'md5()', fileName: 'migrations/001_initial.sql', line: 14, code: 'hash = md5(password)' }
         ]
       }
     ];
