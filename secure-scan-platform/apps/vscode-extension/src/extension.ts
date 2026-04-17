@@ -5,6 +5,7 @@ import { FindingsTreeProvider } from './ui/findingsTreeProvider';
 import { ScanCoordinator } from './services/scanCoordinator';
 import { registerScanCommands } from './commands/scanChangedFiles';
 import { registerScmActions } from './scm/scmActions';
+import { registerScanPanelCommand } from './commands/openScanPanel';
 
 let scanCoordinator: ScanCoordinator;
 let statusBar: StatusBarManager;
@@ -26,6 +27,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
   registerScanCommands(context, scanCoordinator);
   registerScmActions(context, scanCoordinator);
+  registerScanPanelCommand(context);
 
   context.subscriptions.push(
     treeView,

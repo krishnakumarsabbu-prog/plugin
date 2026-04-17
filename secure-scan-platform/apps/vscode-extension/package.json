@@ -84,6 +84,16 @@
         "title": "Refresh Findings",
         "category": "Secure Scan",
         "icon": "$(refresh)"
+      },
+      {
+        "command": "checkmarkx.openPanel",
+        "title": "Open Scan Panel",
+        "category": "CheckmarkX"
+      },
+      {
+        "command": "checkmarkx.openResults",
+        "title": "Open Results Panel",
+        "category": "CheckmarkX"
       }
     ],
     "menus": {
